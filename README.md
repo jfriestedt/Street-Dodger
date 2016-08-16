@@ -28,7 +28,7 @@ I plan to use HTML5 Canvas, CSS3, and JavaScript to build this app. I anticipate
 ## Design Docs
 * [View Wireframes][views]
 
-[views]: docs/view.md
+[views]: docs/views.md
 
 ## Implementation Timeline
 
