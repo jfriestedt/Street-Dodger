@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <title>Street Dodger</title>
     <style>
-    	* { padding: 0; margin: 100px; }
-    	canvas { background: #eee; display: block; margin: 0 auto; }
+    	* { padding: 0; margin: 0; }
+    	canvas { background: #eee; display: block; margin: 100px auto; }
     </style>
 </head>
 <body>
@@ -13,32 +13,34 @@
 <canvas id="sdCanvas" width="800" height="500"></canvas>
 
 <script>
-
   // Variable delarations & Assignments
   //
   const canvas = document.getElementById("sdCanvas");
 	const ctx = canvas.getContext("2d");
 
-  let pedestrianX = 820;
-  let pedestrianY = 400;
+  var pedestrianX = 820;
+  var pedestrianY = 400;
 
-  let playerX = 100;
-  let playerY = 400;
+  var playerX = 100;
+  var playerY = 400;
 
-  let dodgeKeyX = 800;
-  let dodgeKeyY = 50;
+  var dodgeKeyX = 800;
+  var dodgeKeyY = 50;
 
-  let dx = -2;
-  let dy = 0;
+  var dodgeWindowX = 150;
+  var dodgeWindowY = 50;
 
-  let keyPresses = {
+  var dx = -1;
+  var dy = 0;
+
+  var keyPresses = {
     qPressed: false,
     wPressed: false,
     ePressed: false,
     rPressed: false
   };
 
-  let dodgeWindowColor = "blue";
+  var dodgeWindowColor = "blue";
   //
 
   // Key Bindings Setup
@@ -47,6 +49,7 @@
   document.addEventListener("keyup", keyUpHandler, false);
 
   function keyDownHandler(e) {
+    // console.log("keyDownHandler called");
     switch (e.keyCode) {
       case 81:
         keyPresses["qPressed"] = true;
@@ -64,6 +67,7 @@
   };
 
   function keyUpHandler(e) {
+    // console.log("keyUpHandler called");
     switch (e.keyCode) {
       case 81:
         keyPresses["qPressed"] = false;
@@ -81,6 +85,7 @@
   };
 
   function colorDodgeWindow () {
+    // console.log("colorDodgeWindow called");
     for (var key in keyPresses) {
       if (keyPresses.hasOwnProperty(key)) {
         if (keyPresses[key] === true) {
@@ -100,6 +105,7 @@
   const walkerHeight = 50;
 
   function drawPedestrian () {
+    // console.log("drawPedestrian called");
     ctx.beginPath();
     ctx.rect(pedestrianX, pedestrianY, walkerWidth, walkerHeight);
     ctx.fillStyle = "red";
@@ -108,6 +114,7 @@
   }
 
   function drawPlayer () {
+    // console.log("drawPlayer called");
     ctx.beginPath();
     ctx.rect(playerX, playerY, walkerWidth, walkerHeight);
     ctx.fillStyle = "blue";
@@ -116,6 +123,8 @@
   }
 
   function drawDodgeKey () {
+    // console.log("drawDodgeKey called");
+
     ctx.beginPath();
     ctx.rect(dodgeKeyX, dodgeKeyY, 50, 50);
     ctx.fillStyle = "green";
@@ -124,17 +133,29 @@
   }
 
   function drawDodgeWindow () {
+    // console.log("drawDodgeWindow called");
     ctx.beginPath();
-    ctx.rect(150, 50, 50, 50);
+    ctx.rect(dodgeWindowX, dodgeWindowY, 50, 50);
     ctx.strokeStyle = dodgeWindowColor;
     ctx.stroke();
     ctx.closePath();
   }
   //
 
+  // Collision Detection
+  //
+  function dodgeKeyIsCollidedWithWindow () {
+    // console.log("dodgeKeyIsCollidedWithWindow called");
+    if (dodgeKeyX > dodgeWindowX && dodgeKeyX < (dodgeWindowX + 50)) {
+      console.log('collision!')
+      return true;
+    }
+  }
+
   // Master Draw Logic
   //
   function draw () {
+    // console.log("draw called");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawPedestrian();
@@ -144,16 +165,20 @@
 
     drawDodgeKey();
 
+    dodgeKeyIsCollidedWithWindow();
+
+
     pedestrianX += dx;
     pedestrianY += dy;
     dodgeKeyX += dx;
     dodgeKeyY += dy;
+    window.requestAnimationFrame(this.draw);
   }
   //
 
   // Animation
   //
-  setInterval(draw, 10);
+  draw();
   //
 </script>
 
