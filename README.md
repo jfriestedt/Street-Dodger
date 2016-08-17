@@ -36,20 +36,21 @@ I plan to use HTML5 Canvas, CSS3, and JavaScript to build this app. I anticipate
 
 **Objective:** Functioning GameView with HTML Canvas elements on the screen. Enemy pedestrian object appear at screen right and travel toward screen left.
 - [ ] Set up core game objects
-  - [ ] GameView
-  - [ ] DodgeWindow
+  - [x] GameView
+  - [x] DodgeWindow
   - [ ] ScrollingObject
-    - [ ] Pedestrian
+    - [x] Pedestrian
     - [ ] DodgeKey
     - [ ] Background
+    - [x] Dodge Window
   - [ ] Util
-  - [ ] Player
+  - [x] Player
 - [ ] Set up background wrapping
-- [ ] Set up animation using requestAnimationFrame
+- [x] Set up animation using setInterval
 
 ### Phase 2: Game Logic - Collisions, pedestrian interactions, scoring, and points (1 day, R 6pm)
 
-**Objective:** The rules of the game are up and running. Badly timed key presses, when a DodgeKey is not enough aligned with the DodgeWindow, will result in either loss of health or failure to gain points.
+**Objective:** The rules of the game are up and running. Badly timed key presses, when a DodgeKey is not enough aligned with the DodgeWindow, will result in either loss of health or failure to gain points.ee
 - [ ] Set up remaining objects
   - [ ] PointsDisplay
   - [ ] HealthBar
