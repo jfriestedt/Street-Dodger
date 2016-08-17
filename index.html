@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Street Dodger</title>
+    <style>
+    	* { padding: 0; margin: 100px; }
+    	canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="sdCanvas" width="800" height="500"></canvas>
+
+<script>
+  const canvas = document.getElementById("sdCanvas");
+	const ctx = canvas.getContext("2d");
+
+  let pedestrianX = 800;
+  let pedestrianY = 400;
+  let playerX = 100;
+  let playerY = 400;
+  let dx = -2;
+  let dy = 0;
+
+  document.addEventListener("keydown", keyDownHandler, false);
+  document.addEventListener("keyup", keyUpHandler, false);
+
+  function keyDownHandler(e) {
+    switch (e.keyCode) {
+      case 81:
+        console.log('q pressed');
+        break;
+      case 87:
+        console.log('w pressed');
+        break;
+      case 69:
+        console.log('e pressed');
+        break;
+      case 82:
+        console.log('r pressed');
+        break;
+    }
+  }
+
+  function keyUpHandler(e) {
+
+  }
+
+  const walkerWidth = 30;
+  const walkerHeight = 50;
+
+  function drawPedestrian () {
+    ctx.beginPath();
+    ctx.rect(pedestrianX, pedestrianY, walkerWidth, walkerHeight);
+    ctx.fillStyle = "red";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function drawPlayer () {
+    ctx.beginPath();
+    ctx.rect(playerX, playerY, walkerWidth, walkerHeight);
+    ctx.fillStyle = "blue";
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function draw () {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawPlayer();
+    drawPedestrian();
+
+    pedestrianX += dx;
+    pedestrianY += dy;
+  }
+
+  setInterval(draw, 10);
+</script>
+
+</body>
+</html>
