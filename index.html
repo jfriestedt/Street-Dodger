@@ -27,8 +27,8 @@
   var dodgeKeyX = 800;
   var dodgeKeyY = 50;
 
-  var dodgeWindowX = 150;
-  var dodgeWindowY = 50;
+  var dodgeZoneX = 150;
+  var dodgeZoneY = 50;
 
   var dx = -1;
   var dy = 0;
@@ -40,7 +40,7 @@
     rPressed: false
   };
 
-  var dodgeWindowColor = "blue";
+  var dodgeZoneColor = "blue";
   //
 
   // Key Bindings Setup
@@ -67,7 +67,6 @@
   };
 
   function keyUpHandler(e) {
-    // console.log("keyUpHandler called");
     switch (e.keyCode) {
       case 81:
         keyPresses["qPressed"] = false;
@@ -85,17 +84,16 @@
   };
 
   function colorDodgeWindow () {
-    // console.log("colorDodgeWindow called");
     for (var key in keyPresses) {
       if (keyPresses.hasOwnProperty(key)) {
         if (keyPresses[key] === true) {
-          dodgeWindowColor = "yellow";
+          dodgeZoneColor = "yellow";
           return;
         }
       }
     }
 
-    dodgeWindowColor = "blue";
+    dodgeZoneColor = "blue";
   }
   //
 
@@ -105,7 +103,6 @@
   const walkerHeight = 50;
 
   function drawPedestrian () {
-    // console.log("drawPedestrian called");
     ctx.beginPath();
     ctx.rect(pedestrianX, pedestrianY, walkerWidth, walkerHeight);
     ctx.fillStyle = "red";
@@ -114,7 +111,6 @@
   }
 
   function drawPlayer () {
-    // console.log("drawPlayer called");
     ctx.beginPath();
     ctx.rect(playerX, playerY, walkerWidth, walkerHeight);
     ctx.fillStyle = "blue";
@@ -123,8 +119,6 @@
   }
 
   function drawDodgeKey () {
-    // console.log("drawDodgeKey called");
-
     ctx.beginPath();
     ctx.rect(dodgeKeyX, dodgeKeyY, 50, 50);
     ctx.fillStyle = "green";
@@ -133,10 +127,9 @@
   }
 
   function drawDodgeWindow () {
-    // console.log("drawDodgeWindow called");
     ctx.beginPath();
-    ctx.rect(dodgeWindowX, dodgeWindowY, 50, 50);
-    ctx.strokeStyle = dodgeWindowColor;
+    ctx.rect(dodgeZoneX, dodgeZoneY, 50, 50);
+    ctx.strokeStyle = dodgeZoneColor;
     ctx.stroke();
     ctx.closePath();
   }
@@ -145,8 +138,7 @@
   // Collision Detection
   //
   function dodgeKeyIsCollidedWithWindow () {
-    // console.log("dodgeKeyIsCollidedWithWindow called");
-    if (dodgeKeyX > dodgeWindowX && dodgeKeyX < (dodgeWindowX + 50)) {
+    if (dodgeKeyX > dodgeZoneX - 50 && dodgeKeyX < (dodgeZoneX + 50)) {
       console.log('collision!')
       return true;
     }
@@ -155,7 +147,6 @@
   // Master Draw Logic
   //
   function draw () {
-    // console.log("draw called");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawPedestrian();
@@ -166,7 +157,6 @@
     drawDodgeKey();
 
     dodgeKeyIsCollidedWithWindow();
-
 
     pedestrianX += dx;
     pedestrianY += dy;
