@@ -23,28 +23,69 @@
   let dx = -2;
   let dy = 0;
 
+  let keyPresses = {
+    qPressed: false,
+    wPressed: false,
+    ePressed: false,
+    rPressed: false
+  };
+
+  // let qPressed = false;
+  // let wPressed = false;
+  // let ePressed = false;
+  // let rPressed = false;
+  let dodgeWindowColor = "blue";
+
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
 
   function keyDownHandler(e) {
     switch (e.keyCode) {
       case 81:
-        console.log('q pressed');
+        keyPresses["qPressed"] = true;
         break;
       case 87:
-        console.log('w pressed');
+        keyPresses["wPressed"] = true;
         break;
       case 69:
-        console.log('e pressed');
+        keyPresses["ePressed"] = true;
         break;
       case 82:
-        console.log('r pressed');
+        keyPresses["rPressed"] = true;
         break;
     }
-  }
+  };
 
   function keyUpHandler(e) {
+    switch (e.keyCode) {
+      case 81:
+        keyPresses["qPressed"] = false;
+        break;
+      case 87:
+        keyPresses["wPressed"] = false;
+        break;
+      case 69:
+        keyPresses["ePressed"] = false;
+        break;
+      case 82:
+        keyPresses["rPressed"] = false;
+        break;
+    }
+  };
 
+  function colorDodgeWindow () {
+    for (var key in keyPresses) {
+      if (keyPresses.hasOwnProperty(key)) {
+        if (keyPresses[key] === true) {
+          dodgeWindowColor = "yellow";
+          return;
+        }
+      }
+    }
+
+    dodgeWindowColor = "blue";
+    // If any value in the keyPresses object is set to true,
+    // set dodgeWindowColor to "yellow". Else, set it to "blue".
   }
 
   const walkerWidth = 30;
@@ -66,10 +107,21 @@
     ctx.closePath();
   }
 
+  function drawDodgeWindow () {
+    ctx.beginPath();
+    ctx.rect(150, 50, 50, 50);
+    ctx.strokeStyle = dodgeWindowColor;
+    ctx.stroke();
+    ctx.closePath();
+  }
+
   function draw () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawPedestrian();
+
+    colorDodgeWindow();
+    drawDodgeWindow();
 
     pedestrianX += dx;
     pedestrianY += dy;
