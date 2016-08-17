@@ -13,13 +13,21 @@
 <canvas id="sdCanvas" width="800" height="500"></canvas>
 
 <script>
+
+  // Variable delarations & Assignments
+  //
   const canvas = document.getElementById("sdCanvas");
 	const ctx = canvas.getContext("2d");
 
-  let pedestrianX = 800;
+  let pedestrianX = 820;
   let pedestrianY = 400;
+
   let playerX = 100;
   let playerY = 400;
+
+  let dodgeKeyX = 800;
+  let dodgeKeyY = 50;
+
   let dx = -2;
   let dy = 0;
 
@@ -30,12 +38,11 @@
     rPressed: false
   };
 
-  // let qPressed = false;
-  // let wPressed = false;
-  // let ePressed = false;
-  // let rPressed = false;
   let dodgeWindowColor = "blue";
+  //
 
+  // Key Bindings Setup
+  //
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
 
@@ -84,10 +91,11 @@
     }
 
     dodgeWindowColor = "blue";
-    // If any value in the keyPresses object is set to true,
-    // set dodgeWindowColor to "yellow". Else, set it to "blue".
   }
+  //
 
+  // Element Draw Logic
+  //
   const walkerWidth = 30;
   const walkerHeight = 50;
 
@@ -107,6 +115,14 @@
     ctx.closePath();
   }
 
+  function drawDodgeKey () {
+    ctx.beginPath();
+    ctx.rect(dodgeKeyX, dodgeKeyY, 50, 50);
+    ctx.fillStyle = "green";
+    ctx.fill();
+    ctx.closePath();
+  }
+
   function drawDodgeWindow () {
     ctx.beginPath();
     ctx.rect(150, 50, 50, 50);
@@ -114,7 +130,10 @@
     ctx.stroke();
     ctx.closePath();
   }
+  //
 
+  // Master Draw Logic
+  //
   function draw () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
@@ -123,11 +142,19 @@
     colorDodgeWindow();
     drawDodgeWindow();
 
+    drawDodgeKey();
+
     pedestrianX += dx;
     pedestrianY += dy;
+    dodgeKeyX += dx;
+    dodgeKeyY += dy;
   }
+  //
 
+  // Animation
+  //
   setInterval(draw, 10);
+  //
 </script>
 
 </body>
