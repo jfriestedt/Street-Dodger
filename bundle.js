@@ -67,18 +67,23 @@
 
 	// const Misc = require("./misc");
 	const Pedestrian = __webpack_require__(2);
+	const Player = __webpack_require__(5);
 	
 	class Game {
 	  constructor () {
 	    this.dodgeKeys = [];
 	    this.pedestrians = [];
+	    this.players = [];
 	
+	    this.addPlayer();
 	    this.addPedestrians();
 	  }
 	
 	  add (object) {
 	    if (object instanceof Pedestrian) {
 	      this.pedestrians.push(object);
+	    } else if (object instanceof Player) {
+	      this.players.push(object);
 	    }
 	  }
 	
@@ -86,8 +91,14 @@
 	    this.add(new Pedestrian({ game: this }));
 	  }
 	
+	  addPlayer () {
+	    const player = new Player(this);
+	    this.add(player);
+	    return player;
+	  }
+	
 	  allObjects () {
-	    return [].concat(this.dodgeKeys, this.pedestrians);
+	    return [].concat(this.dodgeKeys, this.players, this.pedestrians);
 	  }
 	
 	  draw (ctx) {
@@ -273,13 +284,41 @@
 	    const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
 	
 	    this.pos = [this.pos[0] + this.speed, this.pos[1]];
-	    console.log(this.pos);
 	  }
 	}
 	
 	const NORMAL_FRAME_TIME_DELTA = 1000/60;
 	
 	module.exports = ScrollingObject;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	class Player {
+	  constructor (game) {
+	    this.pos = [100, 400];
+	    this.game = game;
+	    this.width = 30;
+	    this.height = 50;
+	    this.color = "blue";
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = this.color;
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	    
+	  }
+	}
+	
+	module.exports = Player;
 
 
 /***/ }
