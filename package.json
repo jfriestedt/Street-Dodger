@@ -1,0 +1,28 @@
+{
+  "name": "StreetDodger",
+  "version": "1.0.0",
+  "description": "[Heroku link][heroku]",
+  "main": "bundle.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "webpack": "^1.13.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack -w"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfriestedt/Street-Dodger.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jfriestedt/Street-Dodger/issues"
+  },
+  "homepage": "https://github.com/jfriestedt/Street-Dodger#readme"
+}
