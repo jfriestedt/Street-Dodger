@@ -68,13 +68,16 @@
 	// const Misc = require("./misc");
 	const Pedestrian = __webpack_require__(2);
 	const Player = __webpack_require__(5);
+	const DodgeZone = __webpack_require__(6);
 	
 	class Game {
 	  constructor () {
 	    this.dodgeKeys = [];
 	    this.pedestrians = [];
 	    this.players = [];
+	    this.dodgeZone = [];
 	
+	    this.addDodgeZone();
 	    this.addPlayer();
 	    this.addPedestrians();
 	  }
@@ -84,6 +87,8 @@
 	      this.pedestrians.push(object);
 	    } else if (object instanceof Player) {
 	      this.players.push(object);
+	    } else if (object instanceof DodgeZone) {
+	      this.dodgeZone.push(object);
 	    }
 	  }
 	
@@ -97,8 +102,19 @@
 	    return player;
 	  }
 	
+	  addDodgeZone () {
+	    const dodgeZone = new DodgeZone(this);
+	    this.add(dodgeZone);
+	    return dodgeZone;
+	  }
+	
 	  allObjects () {
-	    return [].concat(this.dodgeKeys, this.players, this.pedestrians);
+	    return [].concat(
+	      this.dodgeKeys,
+	      this.players,
+	      this.pedestrians,
+	      this.dodgeZone
+	    );
 	  }
 	
 	  draw (ctx) {
@@ -319,6 +335,39 @@
 	}
 	
 	module.exports = Player;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const GameView = __webpack_require__(3);
+	
+	class DodgeZone {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [150, 50];
+	    this.color = "blue";
+	  }
+	
+	  activate () {
+	    this.color = "yellow";
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], 50, 50);
+	    ctx.strokeStyle = this.color;
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	
+	  }
+	}
+	
+	module.exports = DodgeZone;
 
 
 /***/ }

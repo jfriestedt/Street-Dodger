@@ -15,7 +15,7 @@
     "webpack": "webpack -w"
   },
   "repository": {
-    "type": "git",
+    "type": " git",
     "url": "git+https://github.com/jfriestedt/Street-Dodger.git"
   },
   "keywords": [],
