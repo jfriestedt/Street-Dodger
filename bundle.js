@@ -120,6 +120,10 @@
 	    );
 	  }
 	
+	  checkCollisions () {
+	    this.dodgeZone[0].isCollidedWithDodgeKey(this.dodgeKeys);
+	  }
+	
 	  draw (ctx) {
 	    ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
 	
@@ -136,6 +140,7 @@
 	
 	  step (delta) {
 	    this.moveObjects(delta);
+	    this.checkCollisions();
 	  }
 	}
 	
@@ -302,7 +307,7 @@
 	  }
 	
 	  collideWith (otherObject) {
-	
+	    
 	  }
 	
 	  draw (ctx) {
@@ -367,20 +372,10 @@
 	
 	  activate () {
 	    this.activated = true;
-	    console.log(this.activated);
 	  }
 	
 	  deactivate () {
 	    this.activated = false;
-	    console.log(this.activated);
-	  }
-	
-	  strokeColor () {
-	    if (this.activated) {
-	      return "yellow";
-	    } else {
-	      return "blue";
-	    }
 	  }
 	
 	  draw (ctx) {
@@ -391,9 +386,30 @@
 	    ctx.closePath();
 	  }
 	
-	  move () {
+	  isCollidedWithDodgeKey (dodgeKeys) {
+	    dodgeKeys.forEach((dodgeKey) => {
+	      if (
+	        this.pos[0] + 50 > dodgeKey.pos[0] &&
+	        this.pos[0] < (dodgeKey.pos[0] + 50)
+	      ) {
+	        console.log('collision!');
+	        return true;
+	      }
+	    });
 	
 	  }
+	
+	  move () {
+	  }
+	
+	  strokeColor () {
+	    if (this.activated) {
+	      return "yellow";
+	    } else {
+	      return "blue";
+	    }
+	  }
+	
 	}
 	
 	module.exports = DodgeZone;
@@ -411,11 +427,18 @@
 	
 	    options.color = "green";
 	    options.pos = [pedestrian.pos[0] - 20, 50];
-	    options.speed = -1.5;
+	    options.speed = (pedestrian.speed / 2);
 	    options.width = 50;
 	    options.height = 50;
 	    super(options);
 	  }
+	
+	  // isCollidedWithDodgeZone (dodgeZone) {
+	  //   if (this.pos[0] > dodgeZone.pos[0] - 50 && this.pos[0] < (dodgeZone.pos[0] + 50)) {
+	  //     console.log('collision!');
+	  //     return true;
+	  //   }
+	  // }
 	}
 	
 	module.exports = DodgeKey;
