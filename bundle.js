@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const GameView = __webpack_require__(3);
+	const GameView = __webpack_require__(6);
 	
 	window.Game = Game;
 	window.Pedestrian = __webpack_require__(2);
@@ -67,8 +67,8 @@
 
 	// const Misc = require("./misc");
 	const Pedestrian = __webpack_require__(2);
-	const Player = __webpack_require__(5);
-	const DodgeZone = __webpack_require__(6);
+	const Player = __webpack_require__(4);
+	const DodgeZone = __webpack_require__(5);
 	const DodgeKey = __webpack_require__(7);
 	
 	class Game {
@@ -78,6 +78,7 @@
 	    this.players = [];
 	    this.dodgeZone = [];
 	    this.dodgeKeys = [];
+	    this.score = 0;
 	
 	    this.addPlayer();
 	    this.addPedestrians();
@@ -177,7 +178,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const ScrollingObject = __webpack_require__(4);
+	const ScrollingObject = __webpack_require__(3);
 	
 	const DEFAULTS =  {
 	  COLOR: "red",
@@ -187,7 +188,7 @@
 	  constructor(options = {}) {
 	    options.color = DEFAULTS.COLOR;
 	    options.pos = options.pos || [820, 400];
-	    options.speed = options.speed || -3;
+	    options.speed = -3;
 	    options.width = 30;
 	    options.height = 50;
 	    super(options);
@@ -206,96 +207,6 @@
 /* 3 */
 /***/ function(module, exports) {
 
-	class GameView {
-	  constructor(game, ctx) {
-	    this.ctx = ctx;
-	    this.game = game;
-	    this.dodgeZone = this.game.addDodgeZone();
-	    this.keyPresses = {
-	      qPressed: false,
-	      wPressed: false,
-	      ePressed: false,
-	      rPressed: false
-	    };
-	  }
-	
-	  bindKeyHandlers () {
-	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
-	    document.addEventListener("keyup", this.keyUpHandler.bind(this), false);
-	  }
-	
-	  start () {
-	    this.bindKeyHandlers();
-	    this.lastTime = 0;
-	    requestAnimationFrame(this.animate.bind(this));
-	  }
-	
-	  animate (time) {
-	    const timeDelta = time - this.lastTime;
-	    this.game.step(timeDelta);
-	    this.game.draw(this.ctx);
-	    this.lastTime = time;
-	
-	    requestAnimationFrame(this.animate.bind(this));
-	  }
-	
-	  updateDodgeZone () {
-	    let keyPressed = false;
-	
-	    Object.keys(this.keyPresses).forEach( (key) => {
-	      if (this.keyPresses[key]) {
-	        this.dodgeZone.activate();
-	        keyPressed = true;
-	      }
-	    });
-	
-	    if (!keyPressed) { this.dodgeZone.deactivate(); }
-	  }
-	
-	  keyDownHandler (e) {
-	    switch (e.keyCode) {
-	      case 81:
-	        this.keyPresses["qPressed"] = true;
-	        break;
-	      case 87:
-	        this.keyPresses["wPressed"] = true;
-	        break;
-	      case 69:
-	        this.keyPresses["ePressed"] = true;
-	        break;
-	      case 82:
-	        this.keyPresses["rPressed"] = true;
-	        break;
-	    }
-	    this.updateDodgeZone();
-	  }
-	
-	  keyUpHandler (e) {
-	    switch (e.keyCode) {
-	      case 81:
-	        this.keyPresses["qPressed"] = false;
-	        break;
-	      case 87:
-	        this.keyPresses["wPressed"] = false;
-	        break;
-	      case 69:
-	        this.keyPresses["ePressed"] = false;
-	        break;
-	      case 82:
-	        this.keyPresses["rPressed"] = false;
-	        break;
-	    }
-	    this.updateDodgeZone();
-	  }
-	}
-	
-	module.exports = GameView;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports) {
-
 	class ScrollingObject {
 	  constructor (options) {
 	    this.pos = options.pos;
@@ -307,14 +218,22 @@
 	  }
 	
 	  collideWith (otherObject) {
-	    
+	
 	  }
 	
 	  draw (ctx) {
+	    let text = this.value ? this.value.toUpperCase() : "";
 	    ctx.beginPath();
 	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	
 	    ctx.fillStyle = this.color;
+	    ctx.strokeStyle = "black";
 	    ctx.fill();
+	
+	    ctx.font = "30px sans-serif";
+	    ctx.fillStyle = "white";
+	    ctx.fillText(text, this.pos[0] + 13, this.pos[1] + 35);
+	    ctx.stroke();
 	    ctx.closePath();
 	  }
 	
@@ -329,7 +248,7 @@
 
 
 /***/ },
-/* 5 */
+/* 4 */
 /***/ function(module, exports) {
 
 	class Player {
@@ -358,20 +277,57 @@
 
 
 /***/ },
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(3);
+	const GameView = __webpack_require__(6);
 	
 	class DodgeZone {
 	  constructor (game) {
 	    this.game = game;
 	    this.pos = [150, 50];
 	    this.activated = false;
+	    this.collidedDodgeKey = null;
 	  }
 	
-	  activate () {
+	  activate (key) {
 	    this.activated = true;
+	    this.checkHit(key);
+	  }
+	
+	  checkHit (key) {
+	    if (this.isCollidedWithDodgeKey(this.game.dodgeKeys)) {
+	      if (this.collidedDodgeKey.value === key) {
+	        console.log("hit!");
+	        this.scoreHit();
+	        return true;
+	      } else {
+	        console.log("wrong key!");
+	        return false;
+	      }
+	    } else {
+	      console.log("miss");
+	      return false;
+	    }
+	  }
+	
+	  scoreHit () {
+	    let dodgeZoneMin = this.pos[0];
+	    let dodgeZoneMax = this.pos[0] + 50;
+	    let dodgeKeyMin = this.collidedDodgeKey.pos[0];
+	    let dodgeKeyMax = this.collidedDodgeKey.pos[0] + 50;
+	
+	    let overlap;
+	
+	    if (dodgeKeyMin >= dodgeZoneMin) {
+	      overlap = dodgeZoneMax - dodgeKeyMin;
+	    } else {
+	      overlap = dodgeKeyMax - dodgeZoneMin;
+	    }
+	
+	    let score = overlap * 10;
+	    this.game.score += score;
+	    console.log(`Total: ${this.game.score}`);
 	  }
 	
 	  deactivate () {
@@ -387,16 +343,25 @@
 	  }
 	
 	  isCollidedWithDodgeKey (dodgeKeys) {
+	    let collision = false;
+	    let collidedDodgeKey;
+	
 	    dodgeKeys.forEach((dodgeKey) => {
 	      if (
 	        this.pos[0] + 50 > dodgeKey.pos[0] &&
 	        this.pos[0] < (dodgeKey.pos[0] + 50)
 	      ) {
-	        console.log('collision!');
-	        return true;
+	        collision = true;
+	        this.collidedDodgeKey = dodgeKey;
 	      }
 	    });
 	
+	    if (collision) {
+	      return true;
+	    } else {
+	      this.collidedDodgeKey = null;
+	      return false;
+	    }
 	  }
 	
 	  move () {
@@ -409,17 +374,106 @@
 	      return "blue";
 	    }
 	  }
-	
 	}
 	
 	module.exports = DodgeZone;
 
 
 /***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	class GameView {
+	  constructor(game, ctx) {
+	    this.ctx = ctx;
+	    this.game = game;
+	    this.dodgeZone = this.game.addDodgeZone();
+	    this.keyPresses = {
+	      q: false,
+	      w: false,
+	      e: false,
+	      r: false
+	    };
+	  }
+	
+	  bindKeyHandlers () {
+	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
+	    document.addEventListener("keyup", this.keyUpHandler.bind(this), false);
+	  }
+	
+	  start () {
+	    this.bindKeyHandlers();
+	    this.lastTime = 0;
+	    requestAnimationFrame(this.animate.bind(this));
+	  }
+	
+	  animate (time) {
+	    const timeDelta = time - this.lastTime;
+	    this.game.step(timeDelta);
+	    this.game.draw(this.ctx);
+	    this.lastTime = time;
+	
+	    requestAnimationFrame(this.animate.bind(this));
+	  }
+	
+	  updateDodgeZone () {
+	    let keyPressed = false;
+	
+	    Object.keys(this.keyPresses).forEach( (key) => {
+	      if (this.keyPresses[key]) {
+	        this.dodgeZone.activate(key);
+	        keyPressed = true;
+	      }
+	    });
+	
+	    if (!keyPressed) { this.dodgeZone.deactivate(); }
+	  }
+	
+	  keyDownHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["q"] = true;
+	        break;
+	      case 87:
+	        this.keyPresses["w"] = true;
+	        break;
+	      case 69:
+	        this.keyPresses["e"] = true;
+	        break;
+	      case 82:
+	        this.keyPresses["r"] = true;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	
+	  keyUpHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["q"] = false;
+	        break;
+	      case 87:
+	        this.keyPresses["w"] = false;
+	        break;
+	      case 69:
+	        this.keyPresses["e"] = false;
+	        break;
+	      case 82:
+	        this.keyPresses["r"] = false;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	}
+	
+	module.exports = GameView;
+
+
+/***/ },
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const ScrollingObject = __webpack_require__(4);
+	const ScrollingObject = __webpack_require__(3);
 	
 	class DodgeKey extends ScrollingObject {
 	  constructor(options = {}) {
@@ -427,18 +481,13 @@
 	
 	    options.color = "green";
 	    options.pos = [pedestrian.pos[0] - 20, 50];
-	    options.speed = (pedestrian.speed / 2);
+	    options.speed = pedestrian.speed / 2;
 	    options.width = 50;
 	    options.height = 50;
 	    super(options);
+	    this.value = ['q', 'w', 'e', 'r'][Math.floor(Math.random() * 4)];
+	    console.log(this.value);
 	  }
-	
-	  // isCollidedWithDodgeZone (dodgeZone) {
-	  //   if (this.pos[0] > dodgeZone.pos[0] - 50 && this.pos[0] < (dodgeZone.pos[0] + 50)) {
-	  //     console.log('collision!');
-	  //     return true;
-	  //   }
-	  // }
 	}
 	
 	module.exports = DodgeKey;
