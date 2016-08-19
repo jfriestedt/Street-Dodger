@@ -69,6 +69,7 @@
 	const Pedestrian = __webpack_require__(2);
 	const Player = __webpack_require__(5);
 	const DodgeZone = __webpack_require__(6);
+	const DodgeKey = __webpack_require__(7);
 	
 	class Game {
 	  constructor () {
@@ -76,6 +77,7 @@
 	    this.pedestrians = [];
 	    this.players = [];
 	    this.dodgeZone = [];
+	    this.dodgeKeys = [];
 	
 	    this.addPlayer();
 	    this.addPedestrians();
@@ -84,6 +86,7 @@
 	  add (object) {
 	    if (object instanceof Pedestrian) {
 	      this.pedestrians.push(object);
+	      this.dodgeKeys.push(new DodgeKey({ game: this, pedestrian: object }));
 	    } else if (object instanceof Player) {
 	      this.players.push(object);
 	    } else if (object instanceof DodgeZone) {
@@ -112,7 +115,8 @@
 	      this.dodgeKeys,
 	      this.players,
 	      this.pedestrians,
-	      this.dodgeZone
+	      this.dodgeZone,
+	      this.dodgeKeys
 	    );
 	  }
 	
@@ -172,7 +176,6 @@
 	
 	const DEFAULTS =  {
 	  COLOR: "red",
-	  SPEED: 4
 	};
 	
 	class Pedestrian extends ScrollingObject {
@@ -310,9 +313,7 @@
 	    ctx.closePath();
 	  }
 	
-	  move(timeDelta) {
-	    const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA;
-	
+	  move() {
 	    this.pos = [this.pos[0] + this.speed, this.pos[1]];
 	  }
 	}
@@ -396,6 +397,28 @@
 	}
 	
 	module.exports = DodgeZone;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const ScrollingObject = __webpack_require__(4);
+	
+	class DodgeKey extends ScrollingObject {
+	  constructor(options = {}) {
+	    let pedestrian = options.pedestrian;
+	
+	    options.color = "green";
+	    options.pos = [pedestrian.pos[0] - 20, 50];
+	    options.speed = -1.5;
+	    options.width = 50;
+	    options.height = 50;
+	    super(options);
+	  }
+	}
+	
+	module.exports = DodgeKey;
 
 
 /***/ }
