@@ -77,7 +77,6 @@
 	    this.players = [];
 	    this.dodgeZone = [];
 	
-	    this.addDodgeZone();
 	    this.addPlayer();
 	    this.addPedestrians();
 	  }
@@ -203,45 +202,18 @@
 	  constructor(game, ctx) {
 	    this.ctx = ctx;
 	    this.game = game;
+	    this.dodgeZone = this.game.addDodgeZone();
+	    this.keyPresses = {
+	      qPressed: false,
+	      wPressed: false,
+	      ePressed: false,
+	      rPressed: false
+	    };
 	  }
 	
 	  bindKeyHandlers () {
-	    document.addEventListener("keydown", this.keyDownHandler, false);
-	    document.addEventListener("keyup", this.keyUpHandler, false);
-	  }
-	
-	  keyDownHandler (e) {
-	    switch (e.keyCode) {
-	      case 81:
-	        GameView.keyPresses["qPressed"] = true;
-	        break;
-	      case 87:
-	        GameView.keyPresses["wPressed"] = true;
-	        break;
-	      case 69:
-	        GameView.keyPresses["ePressed"] = true;
-	        break;
-	      case 82:
-	        GameView.keyPresses["rPressed"] = true;
-	        break;
-	    }
-	  }
-	
-	  keyUpHandler (e) {
-	    switch (e.keyCode) {
-	      case 81:
-	        GameView.keyPresses["qPressed"] = false;
-	        break;
-	      case 87:
-	        GameView.keyPresses["wPressed"] = false;
-	        break;
-	      case 69:
-	        GameView.keyPresses["ePressed"] = false;
-	        break;
-	      case 82:
-	        GameView.keyPresses["rPressed"] = false;
-	        break;
-	    }
+	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
+	    document.addEventListener("keyup", this.keyUpHandler.bind(this), false);
 	  }
 	
 	  start () {
@@ -258,14 +230,56 @@
 	
 	    requestAnimationFrame(this.animate.bind(this));
 	  }
-	}
 	
-	GameView.keyPresses = {
-	  qPressed: false,
-	  wPressed: false,
-	  ePressed: false,
-	  rPressed: false
-	};
+	  updateDodgeZone () {
+	    let keyPressed = false;
+	
+	    Object.keys(this.keyPresses).forEach( (key) => {
+	      if (this.keyPresses[key]) {
+	        this.dodgeZone.activate();
+	        keyPressed = true;
+	      }
+	    });
+	
+	    if (!keyPressed) { this.dodgeZone.deactivate(); }
+	  }
+	
+	  keyDownHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["qPressed"] = true;
+	        break;
+	      case 87:
+	        this.keyPresses["wPressed"] = true;
+	        break;
+	      case 69:
+	        this.keyPresses["ePressed"] = true;
+	        break;
+	      case 82:
+	        this.keyPresses["rPressed"] = true;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	
+	  keyUpHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["qPressed"] = false;
+	        break;
+	      case 87:
+	        this.keyPresses["wPressed"] = false;
+	        break;
+	      case 69:
+	        this.keyPresses["ePressed"] = false;
+	        break;
+	      case 82:
+	        this.keyPresses["rPressed"] = false;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	}
 	
 	module.exports = GameView;
 
@@ -347,17 +361,31 @@
 	  constructor (game) {
 	    this.game = game;
 	    this.pos = [150, 50];
-	    this.color = "blue";
+	    this.activated = false;
 	  }
 	
 	  activate () {
-	    this.color = "yellow";
+	    this.activated = true;
+	    console.log(this.activated);
+	  }
+	
+	  deactivate () {
+	    this.activated = false;
+	    console.log(this.activated);
+	  }
+	
+	  strokeColor () {
+	    if (this.activated) {
+	      return "yellow";
+	    } else {
+	      return "blue";
+	    }
 	  }
 	
 	  draw (ctx) {
 	    ctx.beginPath();
 	    ctx.rect(this.pos[0], this.pos[1], 50, 50);
-	    ctx.strokeStyle = this.color;
+	    ctx.strokeStyle = this.strokeColor();
 	    ctx.stroke();
 	    ctx.closePath();
 	  }
