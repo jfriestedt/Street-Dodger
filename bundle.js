@@ -1,0 +1,1055 @@
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const Game = __webpack_require__(1);
+	const LandingPage = __webpack_require__(15);
+	
+	window.Game = Game;
+	window.Pedestrian = __webpack_require__(2);
+	
+	document.addEventListener("DOMContentLoaded", function () {
+	  const canvas = document.getElementById("sdCanvas");
+	  canvas.width = Game.DIM_X;
+	  canvas.height = Game.DIM_Y;
+	
+	  const ctx = canvas.getContext("2d");
+	  const game = new Game();
+	
+	  new LandingPage(game, ctx).display();
+	});
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// const Misc = require("./misc");
+	const Pedestrian = __webpack_require__(2);
+	const Player = __webpack_require__(4);
+	const DodgeZone = __webpack_require__(5);
+	const DodgeKey = __webpack_require__(7);
+	const ScoreCounter = __webpack_require__(8);
+	const HealthBar = __webpack_require__(9);
+	const MissZone = __webpack_require__(10);
+	const Ground = __webpack_require__(11);
+	const Skyline = __webpack_require__(12);
+	const Sky = __webpack_require__(13);
+	const GameOver = __webpack_require__(14);
+	
+	class Game {
+	  constructor () {
+	    this.dodgeKeys = [];
+	    this.pedestrians = [];
+	    this.players = [];
+	    this.dodgeZone = [];
+	    this.dodgeKeys = [];
+	    this.scoreCounter = [];
+	    this.healthBar = [];
+	    this.missZone = [];
+	    this.ground = [];
+	    this.skyline = [];
+	    this.sky = [];
+	    this.pedestrianSpeed = 2;
+	    this.levelPedestrianCount = 0;
+	    this.levelNumber = 1;
+	    this.over = false;
+	
+	    this.addPlayer();
+	    this.addMissZone();
+	    this.addScoreCounter();
+	    this.addGround();
+	    this.addSkyline();
+	    this.addSky();
+	    this.addHealthBar();
+	  }
+	
+	  add (object) {
+	    if (object instanceof Pedestrian) {
+	      this.pedestrians.push(object);
+	      this.dodgeKeys.push(new DodgeKey({ game: this, pedestrian: object }));
+	    } else if (object instanceof Player) {
+	      this.players.push(object);
+	    } else if (object instanceof DodgeZone) {
+	      this.dodgeZone.push(object);
+	    } else if (object instanceof ScoreCounter) {
+	      this.scoreCounter.push(object);
+	    } else if (object instanceof HealthBar) {
+	      this.healthBar.push(object);
+	    } else if (object instanceof MissZone) {
+	      this.missZone.push(object);
+	    } else if (object instanceof Ground) {
+	      this.ground.push(object);
+	    } else if (object instanceof Skyline) {
+	      this.skyline.push(object);
+	    } else if (object instanceof Sky) {
+	      this.sky.push(object);
+	    }
+	  }
+	
+	  addGround () {
+	    this.add(new Ground({ game: this, pos: [0, 403]}));
+	    this.add(new Ground({ game: this, pos: [1536, 403]}));
+	  }
+	
+	  spawnPedestrians () {
+	    let levelTransition = false;
+	
+	    if (this.levelPedestrianCount > 20) {
+	      this.pedestrianSpeed++;
+	      this.levelPedestrianCount = 0;
+	      this.levelNumber++;
+	      console.log(`Level ${this.levelNumber}`);
+	      levelTransition = true;
+	    }
+	
+	    let delay;
+	    if (levelTransition) {
+	      delay = 5000;
+	    } else {
+	      delay = Game.INTERVALS[Math.floor(Math.random() * 4)];
+	    }
+	
+	    window.setTimeout(this.addPedestrian.bind(this), delay);
+	    window.clearTimeout();
+	    this.levelPedestrianCount++;
+	    window.setTimeout(this.spawnPedestrians.bind(this), delay);
+	  }
+	
+	  addPedestrian (game) {
+	    this.add(new Pedestrian({ game: this, speed: this.pedestrianSpeed * -1 }));
+	  }
+	
+	  addPlayer () {
+	    const player = new Player(this);
+	    this.add(player);
+	    return player;
+	  }
+	
+	  addDodgeZone () {
+	    const dodgeZone = new DodgeZone(this);
+	    this.add(dodgeZone);
+	    return dodgeZone;
+	  }
+	
+	  addHealthBar () {
+	    this.add(new HealthBar(this));
+	  }
+	
+	  addMissZone () {
+	    this.add(new MissZone(this));
+	  }
+	
+	  addScoreCounter () {
+	    this.add(new ScoreCounter(this));
+	  }
+	
+	  addSky () {
+	    this.add(new Sky({ game: this, pos: [0, 0]}));
+	    this.add(new Sky({ game: this, pos: [832, 0]}));
+	  }
+	
+	  addSkyline () {
+	    this.add(new Skyline({ game: this, pos: [0, 340]}));
+	    this.add(new Skyline({ game: this, pos: [832, 340]}));
+	  }
+	
+	  allObjects () {
+	    return [].concat(
+	      this.sky,
+	      this.skyline,
+	      this.ground,
+	      this.dodgeKeys,
+	      this.pedestrians,
+	      this.players,
+	      this.dodgeZone,
+	      this.dodgeKeys,
+	      this.scoreCounter,
+	      this.healthBar,
+	      this.missZone
+	    );
+	  }
+	
+	  checkCollisions () {
+	    this.dodgeZone[0].isCollidedWithDodgeKey(this.dodgeKeys);
+	    this.missZone[0].isCollidedWithDodgeKey(this.dodgeKeys);
+	  }
+	
+	  destroyDodgeKey (dodgeKeyToDestroy) {
+	    this.dodgeKeys.forEach((dodgeKey, index, dodgeKeys) => {
+	      if (dodgeKey === dodgeKeyToDestroy) {
+	        dodgeKeys.splice(index, 1);
+	      }
+	    });
+	  }
+	
+	  draw (ctx) {
+	    ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
+	
+	    if (this.over) {
+	      let newGame = new Game();
+	      new GameOver(newGame).display();
+	    } else {
+	      this.allObjects().forEach((object) => {
+	        object.draw(ctx);
+	      });
+	    }
+	  }
+	
+	  endGame () {
+	    this.over = true;
+	  }
+	
+	  moveObjects (delta) {
+	    this.allObjects().forEach((object) => {
+	      object.move(delta);
+	    });
+	  }
+	
+	  sendDamage (damage) {
+	    this.healthBar[0].registerDamage(damage);
+	  }
+	
+	  step (delta) {
+	    if (!this.over) {
+	      this.moveObjects(delta);
+	      this.checkCollisions();
+	    }
+	  }
+	
+	  updateScore (points) {
+	    this.scoreCounter[0].addPoints(points);
+	  }
+	}
+	
+	Game.DIM_X = 800;
+	Game.DIM_Y = 500;
+	Game.BG_COLOR = "#ccc";
+	Game.INTERVALS = [500, 1000, 1500, 2000];
+	
+	// Game.prototype.draw = function (ctx) {
+	//   ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
+	//   ctx.fillStyle = Game.BG_COLOR;
+	//   ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
+	//
+	//   drawPlayer();
+	//   drawPedestrian();
+	//
+	//   colorDodgeWindow();
+	//   drawDodgeWindow();
+	//
+	//   drawDodgeKey();
+	//
+	//   dodgeKeyIsCollidedWithWindow();
+	//
+	//   pedestrianX += dx;
+	//   pedestrianY += dy;
+	//   dodgeKeyX += dx;
+	//   dodgeKeyY += dy;
+	//   window.requestAnimationFrame(this.draw);
+	// }
+	
+	module.exports = Game;
+
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const ScrollingObject = __webpack_require__(3);
+	
+	class Pedestrian extends ScrollingObject {
+	  constructor(options = {}) {
+	    options.color = "red";
+	    options.pos = options.pos || [820, 364];
+	    options.speed = options.speed;
+	    options.width = 60;
+	    options.height = 60;
+	    super(options);
+	
+	    this.image = new Image();
+	    this.image.src = Pedestrian.randomImage();
+	    this.currentFrame = 0;
+	    this.frames = 7;
+	    this.frameOccurrences = 0;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.drawImage(
+	      this.image,                     // source image object
+	      (this.width * this.currentFrame) + 2, // source x
+	      0,                              // source y
+	      60,                             // source width
+	      60,                             // source height
+	      this.pos[0],                    // destination x
+	      this.pos[1],                    // destination y
+	      this.width,                 // destination width
+	      this.height);               // destination height
+	
+	    if (this.currentFrame === this.frames) {
+	      this.currentFrame = 0;
+	    } else {
+	      if (this.frameOccurrences < 3) {
+	        this.frameOccurrences++;
+	      } else {
+	        this.frameOccurrences = 0;
+	        this.currentFrame++;
+	      }
+	    }
+	    ctx.closePath();
+	  }
+	}
+	
+	Pedestrian.randomImage = () => {
+	  return [
+	    "lib/images/pedestrian1_walking.png",
+	    "lib/images/pedestrian2_walking.png",
+	    "lib/images/pedestrian3_walking.png",
+	    "lib/images/pedestrian4_walking.png",
+	    "lib/images/pedestrian5_walking.png",
+	  ][Math.floor(Math.random() * 5)];
+	};
+	
+	module.exports = Pedestrian;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	class ScrollingObject {
+	  constructor (options) {
+	    this.pos = options.pos;
+	    this.speed = options.speed;
+	    this.width = options.width;
+	    this.height = options.height;
+	    this.color = options.color;
+	    this.game = options.game;
+	  }
+	
+	  draw (ctx) {
+	    let text = this.value ? this.value.toUpperCase() : "";
+	
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	
+	    ctx.fillStyle = this.color;
+	    ctx.fill();
+	
+	    ctx.font = "30px monospace";
+	    ctx.fillStyle = "black";
+	    ctx.fillText(text, this.pos[0] + 35, this.pos[1] + 35);
+	
+	    ctx.strokeStyle = "black";
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	
+	  move() {
+	    this.pos = [this.pos[0] + this.speed, this.pos[1]];
+	  }
+	}
+	
+	const NORMAL_FRAME_TIME_DELTA = 1000/60;
+	
+	module.exports = ScrollingObject;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	class Player {
+	  constructor (game) {
+	    this.pos = [100, 364];
+	    this.game = game;
+	    this.width = 60;
+	    this.height = 60;
+	    this.image = new Image();
+	    this.image.src = "lib/images/player_walking_alt.png";
+	    this.currentFrame = 0;
+	    this.frames = 7;
+	    this.frameOccurences = 0;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.drawImage(
+	      this.image,                     // source image object
+	      (this.width * this.currentFrame) + 2, // source x
+	      0,                              // source y
+	      60,                             // source width
+	      60,                             // source height
+	      this.pos[0],                    // destination x
+	      this.pos[1],                    // destination y
+	      this.width,                 // destination width
+	      this.height);               // destination height
+	
+	    if (this.currentFrame === this.frames) {
+	      this.currentFrame = 0;
+	    } else {
+	      if (this.frameOccurrences < 3) {
+	        this.frameOccurrences++;
+	      } else {
+	        this.frameOccurrences = 0;
+	        this.currentFrame++;
+	      }
+	    }
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	
+	  }
+	}
+	
+	module.exports = Player;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const GameView = __webpack_require__(6);
+	
+	class DodgeZone {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [150, 250];
+	    this.activated = false;
+	    this.collidedDodgeKey = null;
+	  }
+	
+	  activate (key) {
+	    this.activated = true;
+	    this.checkHit(key);
+	  }
+	
+	  checkHit (key) {
+	    if (this.isCollidedWithDodgeKey(this.game.dodgeKeys)) {
+	      if (this.collidedDodgeKey.value === key) {
+	        this.scoreHit();
+	        this.game.destroyDodgeKey(this.collidedDodgeKey);
+	        return true;
+	      } else {
+	        this.game.sendDamage(10);
+	        this.game.destroyDodgeKey(this.collidedDodgeKey);
+	        return false;
+	      }
+	    } else {
+	      this.game.sendDamage(5);
+	      return false;
+	    }
+	  }
+	
+	  scoreHit () {
+	    let dodgeZoneMin = this.pos[0];
+	    let dodgeZoneMax = this.pos[0] + 50;
+	    let dodgeKeyMin = this.collidedDodgeKey.pos[0];
+	    let dodgeKeyMax = this.collidedDodgeKey.pos[0] + 50;
+	
+	    let overlap;
+	
+	    if (dodgeKeyMin >= dodgeZoneMin) {
+	      overlap = dodgeZoneMax - dodgeKeyMin;
+	    } else {
+	      overlap = dodgeKeyMax - dodgeZoneMin;
+	    }
+	
+	    let points = overlap * 10;
+	    this.game.updateScore(points);
+	  }
+	
+	  deactivate () {
+	    this.activated = false;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], 50, 50);
+	    ctx.strokeStyle = this.strokeColor();
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	
+	  isCollidedWithDodgeKey (dodgeKeys) {
+	    let collision = false;
+	    let collidedDodgeKey;
+	
+	    dodgeKeys.forEach((dodgeKey) => {
+	      if (
+	        this.pos[0] + 50 > dodgeKey.pos[0] &&
+	        this.pos[0] < (dodgeKey.pos[0] + 50)
+	      ) {
+	        collision = true;
+	        this.collidedDodgeKey = dodgeKey;
+	      }
+	    });
+	
+	    if (collision) {
+	      return true;
+	    } else {
+	      this.collidedDodgeKey = null;
+	      return false;
+	    }
+	  }
+	
+	  move () {
+	  }
+	
+	  strokeColor () {
+	    if (this.activated) {
+	      return "yellow";
+	    } else {
+	      return "blue";
+	    }
+	  }
+	}
+	
+	module.exports = DodgeZone;
+
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	class GameView {
+	  constructor(game, ctx) {
+	    this.ctx = ctx;
+	    this.game = game;
+	    this.dodgeZone = this.game.addDodgeZone();
+	    this.keyPresses = {
+	      q: false,
+	      w: false,
+	      e: false,
+	      r: false
+	    };
+	  }
+	
+	  bindKeyHandlers () {
+	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
+	    document.addEventListener("keyup", this.keyUpHandler.bind(this), false);
+	  }
+	
+	  start () {
+	    this.bindKeyHandlers();
+	    this.lastTime = 0;
+	    this.game.spawnPedestrians();
+	    requestAnimationFrame(this.animate.bind(this));
+	  }
+	
+	  animate (time) {
+	    const timeDelta = time - this.lastTime;
+	    this.game.step(timeDelta);
+	    this.game.draw(this.ctx);
+	    this.lastTime = time;
+	
+	    if (!this.game.over) {
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }
+	
+	  updateDodgeZone () {
+	    let keyPressed = false;
+	
+	    Object.keys(this.keyPresses).forEach( (key) => {
+	      if (this.keyPresses[key]) {
+	        this.dodgeZone.activate(key);
+	        keyPressed = true;
+	      }
+	    });
+	
+	    if (!keyPressed) { this.dodgeZone.deactivate(); }
+	  }
+	
+	  keyDownHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["q"] = true;
+	        break;
+	      case 87:
+	        this.keyPresses["w"] = true;
+	        break;
+	      case 69:
+	        this.keyPresses["e"] = true;
+	        break;
+	      case 82:
+	        this.keyPresses["r"] = true;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	
+	  keyUpHandler (e) {
+	    switch (e.keyCode) {
+	      case 81:
+	        this.keyPresses["q"] = false;
+	        break;
+	      case 87:
+	        this.keyPresses["w"] = false;
+	        break;
+	      case 69:
+	        this.keyPresses["e"] = false;
+	        break;
+	      case 82:
+	        this.keyPresses["r"] = false;
+	        break;
+	    }
+	    this.updateDodgeZone();
+	  }
+	}
+	
+	module.exports = GameView;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const ScrollingObject = __webpack_require__(3);
+	
+	class DodgeKey extends ScrollingObject {
+	  constructor(options = {}) {
+	    let pedestrian = options.pedestrian;
+	
+	    options.color = "white";
+	    options.pos = [pedestrian.pos[0] - 20, 250];
+	    options.speed = pedestrian.speed / 2;
+	    options.width = 50;
+	    options.height = 50;
+	    super(options);
+	    this.value = ['q', 'w', 'e', 'r'][Math.floor(Math.random() * 4)];
+	  }
+	}
+	
+	module.exports = DodgeKey;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	class ScoreCounter {
+	  constructor (game) {
+	    this.scoreCount = 0;
+	    this.game = game;
+	  }
+	
+	  addPoints (points) {
+	    this.scoreCount += points;
+	  }
+	
+	  draw (ctx) {
+	    ctx.font = '30pt monospace';
+	    ctx.textAlign = 'right';
+	    ctx.fillStyle = "black";
+	    ctx.fillText(this.scoreCount, 790, 40);
+	  }
+	
+	  move () {
+	  }
+	}
+	
+	module.exports = ScoreCounter;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	class HealthBar {
+	  constructor (game) {
+	    this.game = game;
+	    this.health = 100;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(20, 380, 30, -300);
+	    ctx.strokeStyle = "black";
+	    ctx.stroke();
+	    ctx.closePath();
+	
+	    ctx.beginPath();
+	    ctx.rect(20, 380, 30, (this.health * 3) * -1);
+	    ctx.fillStyle = "purple";
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	
+	  registerDamage (damage) {
+	    this.health -= damage;
+	
+	    if (this.health <= 0) {
+	      this.health = 0;
+	      this.game.endGame();
+	    }
+	  }
+	
+	  move () {
+	
+	  }
+	}
+	
+	module.exports = HealthBar;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const GameView = __webpack_require__(6);
+	
+	class MissZone {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [35, 250];
+	    this.collidedDodgeKey = null;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], 50, 50);
+	    // ctx.strokeStyle = "red";
+	    // ctx.stroke();
+	    ctx.closePath();
+	  }
+	
+	  isCollidedWithDodgeKey (dodgeKeys) {
+	    let collision = false;
+	    let collidedDodgeKey;
+	
+	    dodgeKeys.forEach((dodgeKey) => {
+	      if (
+	        this.pos[0] + 50 > dodgeKey.pos[0] &&
+	        this.pos[0] < (dodgeKey.pos[0] + 50)
+	      ) {
+	        collision = true;
+	        this.collidedDodgeKey = dodgeKey;
+	      }
+	    });
+	
+	    if (collision) {
+	      this.game.destroyDodgeKey(this.collidedDodgeKey);
+	      this.game.sendDamage(10);
+	      return true;
+	    } else {
+	      this.collidedDodgeKey = null;
+	      return false;
+	    }
+	  }
+	
+	  move () {
+	  }
+	
+	}
+	
+	module.exports = MissZone;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	class Ground {
+	  constructor (options) {
+	    this.game = options.game;
+	    this.pos = options.pos;
+	    this.width = 1536;
+	    this.height = 96;
+	    this.image = new Image();
+	    this.image.src = "lib/images/ground-alt.png";
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      this.pos[0],
+	      this.pos[1],
+	      this.width,
+	      this.height
+	    );
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	    this.pos = [this.pos[0] - 1.5, this.pos[1]];
+	    this.wrap();
+	  }
+	
+	  wrap () {
+	    if (this.pos[0] < -1536) {
+	      this.pos[0] += 3072;
+	    }
+	  }
+	}
+	
+	module.exports = Ground;
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	class Skyline {
+	  constructor (options) {
+	    this.game = options.game;
+	    this.pos = options.pos;
+	    this.width = 832;
+	    this.height = 64;
+	    this.image = new Image();
+	    this.image.src = "lib/images/skyline.png";
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      this.pos[0],
+	      this.pos[1],
+	      this.width,
+	      this.height
+	    );
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	    this.pos = [this.pos[0] - 0.5, this.pos[1]];
+	    this.wrap();
+	  }
+	
+	  wrap () {
+	    if (this.pos[0] < -832) {
+	      this.pos[0] += 1664;
+	    }
+	  }
+	}
+	
+	module.exports = Skyline;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	class Sky {
+	  constructor (options) {
+	    this.game = options.game;
+	    this.pos = options.pos;
+	    this.width = 832;
+	    this.height = 340;
+	    this.image = new Image();
+	    this.image.src = "lib/images/sky.png";
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      this.pos[0],
+	      this.pos[1],
+	      this.width,
+	      this.height
+	    );
+	    ctx.closePath();
+	  }
+	
+	  move () {
+	    this.pos = [this.pos[0] - 0.1, this.pos[1]];
+	    this.wrap();
+	  }
+	
+	  wrap () {
+	    if (this.pos[0] < -832) {
+	      this.pos[0] += 1664;
+	    }
+	  }
+	}
+	
+	module.exports = Sky;
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const GameView = __webpack_require__(6);
+	const Game = __webpack_require__(1);
+	
+	class GameOver {
+	  constructor (newGame) {
+	    const canvas = document.getElementById("sdCanvas");
+	    this.ctx = canvas.getContext("2d");
+	    this.width = 800;
+	    this.height = 500;
+	    this.image = new Image();
+	    this.image.src = "lib/images/game_over.png";
+	    this.game = newGame;
+	  }
+	
+	  bindKeyHandlers () {
+	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(0, 0, this.width, this.height);
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      0,
+	      0,
+	      this.width,
+	      this.height
+	    );
+	    ctx.closePath();
+	  }
+	
+	  display () {
+	    this.bindKeyHandlers();
+	    setInterval(function () {this.draw(this.ctx);}.bind(this), 1);
+	  }
+	
+	  keyDownHandler (e) {
+	    switch (e.keyCode) {
+	      case 13:
+	        this.startGame();
+	        break;
+	    }
+	  }
+	
+	  startGame () {
+	    new GameView(this.game, this.ctx).start();
+	  }
+	}
+	
+	module.exports = GameOver;
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	const GameView = __webpack_require__(6);
+	
+	class LandingPage {
+	  constructor (game, ctx) {
+	    this.ctx = ctx;
+	    this.game = game;
+	    this.width = 800;
+	    this.height = 500;
+	    this.image = new Image();
+	    this.image.src = "lib/images/landing_page.png";
+	    this.gameStarted = false;
+	  }
+	
+	  bindKeyHandlers () {
+	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(0, 0, this.width, this.height);
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      0,
+	      0,
+	      this.width,
+	      this.height
+	    );
+	    ctx.closePath();
+	  }
+	
+	  display () {
+	    this.bindKeyHandlers();
+	    this.landingPageDisplay = setInterval(function () {this.draw(this.ctx);}.bind(this), 10);
+	  }
+	
+	  keyDownHandler (e) {
+	    switch (e.keyCode) {
+	      case 13:
+	        this.startGame();
+	        break;
+	    }
+	  }
+	
+	  startGame () {
+	    new GameView(this.game, this.ctx).start();
+	    window.clearInterval(this.landingPageDisplay);
+	  }
+	}
+	
+	module.exports = LandingPage;
+
+
+/***/ }
+/******/ ]);
+//# sourceMappingURL=bundle.js.map
