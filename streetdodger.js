@@ -1,5 +1,4 @@
 const Game = require("./lib/game");
-const GameView = require("./lib/game_view");
 const LandingPage = require("./lib/landing_page");
 
 window.Game = Game;
@@ -13,7 +12,5 @@ document.addEventListener("DOMContentLoaded", function () {
   const ctx = canvas.getContext("2d");
   const game = new Game();
 
-  const landingPage = new LandingPage(game);
-  landingPage.display();
-  new GameView(game, ctx).start();
+  new LandingPage(game, ctx).display();
 });
