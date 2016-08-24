@@ -195,13 +195,13 @@
 	  }
 	
 	  addSky () {
-	    this.add(new Sky({ game: this, pos: [0, 0]}));
-	    this.add(new Sky({ game: this, pos: [832, 0]}));
+	    this.add(new Sky({ game: this, pos: [0, -62]}));
+	    this.add(new Sky({ game: this, pos: [832, -62]}));
 	  }
 	
 	  addSkyline () {
-	    this.add(new Skyline({ game: this, pos: [0, 340]}));
-	    this.add(new Skyline({ game: this, pos: [832, 340]}));
+	    this.add(new Skyline({ game: this, pos: [0, 278]}));
+	    this.add(new Skyline({ game: this, pos: [1664, 278]}));
 	  }
 	
 	  addHitOverlay () {
@@ -520,7 +520,7 @@
 	class DodgeZone {
 	  constructor (game) {
 	    this.game = game;
-	    this.pos = [150, 250];
+	    this.pos = [150, 220];
 	    this.activated = false;
 	    this.collidedDodgeKey = null;
 	  }
@@ -736,7 +736,7 @@
 	    let pedestrian = options.pedestrian;
 	
 	    options.color = "white";
-	    options.pos = [pedestrian.pos[0] - 20, 250];
+	    options.pos = [pedestrian.pos[0] - 20, 220];
 	    options.speed = pedestrian.speed / 2;
 	    options.width = 50;
 	    options.height = 50;
@@ -792,7 +792,7 @@
 	    ctx.strokeStyle = "black";
 	    ctx.stroke();
 	
-	    ctx.font = "20px arcade";
+	    ctx.font = "18px arcade";
 	    ctx.textAlign = 'left';
 	    ctx.fillStyle = "black";
 	    ctx.fillText("PATIENCE", 20, 70);
@@ -832,7 +832,7 @@
 	class MissZone {
 	  constructor (game) {
 	    this.game = game;
-	    this.pos = [35, 250];
+	    this.pos = [35, 220];
 	    this.collidedDodgeKey = null;
 	  }
 	
@@ -930,8 +930,8 @@
 	  constructor (options) {
 	    this.game = options.game;
 	    this.pos = options.pos;
-	    this.width = 832;
-	    this.height = 64;
+	    this.width = 1664;
+	    this.height = 128;
 	    this.image = new Image();
 	    this.image.src = "lib/images/skyline.png";
 	  }
@@ -959,8 +959,8 @@
 	  }
 	
 	  wrap () {
-	    if (this.pos[0] < -832) {
-	      this.pos[0] += 1664;
+	    if (this.pos[0] < -1664) {
+	      this.pos[0] += 3328;
 	    }
 	  }
 	}
@@ -1170,7 +1170,7 @@
 	  constructor (message, game) {
 	    this.game = game;
 	    this.message = message;
-	    this.pos = [100, 200];
+	    this.pos = [0, 180];
 	    this.width = 100;
 	    this.height = 50;
 	    this.transparency = 1;
