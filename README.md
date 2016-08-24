@@ -29,7 +29,7 @@ Levels increment indefinitely over the course of a game. Each levels brings fast
 
 ![levels]
 
-[overview]: ./docs/images/overview.png
+[overview]: ./docs/images/Overview.png
 [damage]: ./docs/images/Damage.gif
 [points]: ./docs/images/Points.gif
 [levels]: ./docs/images/Levels.gif
