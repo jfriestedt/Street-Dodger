@@ -138,11 +138,11 @@
 	  }
 	
 	  addGround () {
-	    this.add(new Ground({ game: this, pos: [0, 403]}));
-	    this.add(new Ground({ game: this, pos: [1536, 403]}));
+	    this.add(new Ground({ game: this, pos: [0, 387]}));
+	    this.add(new Ground({ game: this, pos: [1536, 387]}));
 	  }
 	
-	  spawnPedestrians () {
+	  spawnPedestrians () {''
 	    let levelTransition = false;
 	
 	    if (this.levelPedestrianCount > 20) {
@@ -334,7 +334,7 @@
 	class Pedestrian extends ScrollingObject {
 	  constructor(options = {}) {
 	    options.color = "red";
-	    options.pos = options.pos || [820, 364];
+	    options.pos = options.pos || [820, 384];
 	    options.speed = options.speed;
 	    options.width = 60;
 	    options.height = 60;
@@ -437,7 +437,7 @@
 
 	class Player {
 	  constructor (game) {
-	    this.pos = [100, 364];
+	    this.pos = [100, 384];
 	    this.game = game;
 	    this.width = 60;
 	    this.height = 60;
@@ -451,14 +451,18 @@
 	
 	  checkDodging () {
 	    if (this.dodging === true) {
-	      if (this.width < 70) {
+	      if (this.width < 68) {
 	        this.width += 2;
 	        this.height += 2;
+	        this.pos[0] -= 2;
+	        this.pos[1] += 2;
 	      }
 	    } else {
 	      if (this.width > 60) {
 	        this.width -= 2;
 	        this.height -= 2;
+	        this.pos[0] += 2;
+	        this.pos[1] -= 2;
 	      }
 	    }
 	  }
@@ -885,7 +889,7 @@
 	    this.game = options.game;
 	    this.pos = options.pos;
 	    this.width = 1536;
-	    this.height = 96;
+	    this.height = 112;
 	    this.image = new Image();
 	    this.image.src = "lib/images/ground-alt.png";
 	  }
