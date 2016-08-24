@@ -78,6 +78,7 @@
 	const Skyline = __webpack_require__(12);
 	const Sky = __webpack_require__(13);
 	const GameOver = __webpack_require__(14);
+	const HitOverlay = __webpack_require__(16);
 	
 	class Game {
 	  constructor () {
@@ -88,6 +89,7 @@
 	    this.dodgeKeys = [];
 	    this.scoreCounter = [];
 	    this.healthBar = [];
+	    this.hitOverlay = [];
 	    this.missZone = [];
 	    this.ground = [];
 	    this.skyline = [];
@@ -126,6 +128,8 @@
 	      this.skyline.push(object);
 	    } else if (object instanceof Sky) {
 	      this.sky.push(object);
+	    } else if (object instanceof HitOverlay) {
+	      this.hitOverlay.push(object);
 	    }
 	  }
 	
@@ -196,6 +200,15 @@
 	    this.add(new Skyline({ game: this, pos: [832, 340]}));
 	  }
 	
+	  addHitOverlay () {
+	    this.add(new HitOverlay(this));
+	    window.setTimeout(this.removeHitOverlay.bind(this), 70);
+	  }
+	
+	  removeHitOverlay () {
+	    this.hitOverlay = [];
+	  }
+	
 	  allObjects () {
 	    return [].concat(
 	      this.sky,
@@ -208,7 +221,8 @@
 	      this.dodgeKeys,
 	      this.scoreCounter,
 	      this.healthBar,
-	      this.missZone
+	      this.missZone,
+	      this.hitOverlay
 	    );
 	  }
 	
@@ -250,6 +264,7 @@
 	
 	  sendDamage (damage) {
 	    this.healthBar[0].registerDamage(damage);
+	    this.addHitOverlay();
 	  }
 	
 	  step (delta) {
@@ -1080,6 +1095,34 @@
 	}
 	
 	module.exports = LandingPage;
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	class HitOverlay {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [0, 0];
+	    this.width = 800;
+	    this.height = 500;
+	    this.image = new Image();
+	    this.image.src = "lib/images/hit_overlay.png";
+	  }
+	
+	  move () {}
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = "rgba(255,0,0,0.5)";
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = HitOverlay;
 
 
 /***/ }
