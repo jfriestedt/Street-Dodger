@@ -79,6 +79,7 @@
 	const Sky = __webpack_require__(13);
 	const GameOver = __webpack_require__(14);
 	const HitOverlay = __webpack_require__(16);
+	const Message = __webpack_require__(17);
 	
 	class Game {
 	  constructor () {
@@ -90,6 +91,7 @@
 	    this.scoreCounter = [];
 	    this.healthBar = [];
 	    this.hitOverlay = [];
+	    this.message = [];
 	    this.missZone = [];
 	    this.ground = [];
 	    this.skyline = [];
@@ -130,6 +132,8 @@
 	      this.sky.push(object);
 	    } else if (object instanceof HitOverlay) {
 	      this.hitOverlay.push(object);
+	    } else if (object instanceof Message) {
+	      this.message.push(object);
 	    }
 	  }
 	
@@ -205,8 +209,18 @@
 	    window.setTimeout(this.removeHitOverlay.bind(this), 70);
 	  }
 	
+	  addMessage (message) {
+	    window.clearTimeout(this.messageTimeout);
+	    this.add(new Message(message, this));
+	    this.messageTimeout = window.setTimeout(this.removeMessage.bind(this), 500);
+	  }
+	
 	  removeHitOverlay () {
 	    this.hitOverlay = [];
+	  }
+	
+	  removeMessage () {
+	    this.message.shift();
 	  }
 	
 	  allObjects () {
@@ -222,6 +236,7 @@
 	      this.scoreCounter,
 	      this.healthBar,
 	      this.missZone,
+	      this.message,
 	      this.hitOverlay
 	    );
 	  }
@@ -274,7 +289,8 @@
 	    }
 	  }
 	
-	  updateScore (points) {
+	  updateScore (points, message) {
+	    this.addMessage(message);
 	    this.scoreCounter[0].addPoints(points);
 	  }
 	}
@@ -395,9 +411,10 @@
 	    ctx.fillStyle = this.color;
 	    ctx.fill();
 	
-	    ctx.font = "30px monospace";
+	    ctx.font = "25px arcade";
+	    ctx.textAlign = 'right';
 	    ctx.fillStyle = "black";
-	    ctx.fillText(text, this.pos[0] + 35, this.pos[1] + 35);
+	    ctx.fillText(text, this.pos[0] + 39, this.pos[1] + 37);
 	
 	    ctx.strokeStyle = "black";
 	    ctx.stroke();
@@ -545,7 +562,21 @@
 	    }
 	
 	    let points = overlap * 10;
-	    this.game.updateScore(points);
+	    let message;
+	
+	    if (points < 100) {
+	      message = "LAME!";
+	    } else if (points < 200) {
+	      message = "OK!";
+	    } else if (points < 300) {
+	      message = "GOOD!";
+	    } else if (points < 400) {
+	      message = "GREAT!";
+	    } else if (points <= 500) {
+	      message = "EXCELLENT!";
+	    }
+	
+	    this.game.updateScore(points, message);
 	  }
 	
 	  deactivate () {
@@ -732,9 +763,9 @@
 	  }
 	
 	  draw (ctx) {
-	    ctx.font = '30pt monospace';
+	    ctx.font = '20pt arcade';
 	    ctx.textAlign = 'right';
-	    ctx.fillStyle = "black";
+	    ctx.fillStyle = "#fc2d1c";
 	    ctx.fillText(this.scoreCount, 790, 40);
 	  }
 	
@@ -760,11 +791,17 @@
 	    ctx.rect(20, 380, 30, -300);
 	    ctx.strokeStyle = "black";
 	    ctx.stroke();
+	
+	    ctx.font = "20px arcade";
+	    ctx.textAlign = 'left';
+	    ctx.fillStyle = "black";
+	    ctx.fillText("PATIENCE", 20, 70);
+	
 	    ctx.closePath();
 	
 	    ctx.beginPath();
 	    ctx.rect(20, 380, 30, (this.health * 3) * -1);
-	    ctx.fillStyle = "purple";
+	    ctx.fillStyle = "rgba(255,45,28,0.8)";
 	    ctx.fill();
 	    ctx.closePath();
 	  }
@@ -1123,6 +1160,43 @@
 	}
 	
 	module.exports = HitOverlay;
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	class Message {
+	  constructor (message, game) {
+	    this.game = game;
+	    this.message = message;
+	    this.pos = [100, 200];
+	    this.width = 100;
+	    this.height = 50;
+	    this.transparency = 1;
+	  }
+	
+	  move () {
+	    this.pos[1] -= 1;
+	  }
+	
+	  draw (ctx) {
+	    this.transparency = this.transparency - 0.04;
+	
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	
+	    ctx.font = "18px arcade";
+	    ctx.fontStyle="bold";
+	    ctx.fillStyle = `rgba(252,45,28,${this.transparency})`;
+	    ctx.fillText(this.message, this.pos[0] + 150, this.pos[1] + 20);
+	
+	    ctx.strokeStyle = "black";
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = Message;
 
 
 /***/ }
