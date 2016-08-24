@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const LandingPage = __webpack_require__(15);
+	const LandingPage = __webpack_require__(17);
 	
 	window.Game = Game;
 	window.Pedestrian = __webpack_require__(2);
@@ -78,8 +78,8 @@
 	const Skyline = __webpack_require__(12);
 	const Sky = __webpack_require__(13);
 	const GameOver = __webpack_require__(14);
-	const HitOverlay = __webpack_require__(16);
-	const Message = __webpack_require__(17);
+	const HitOverlay = __webpack_require__(15);
+	const Message = __webpack_require__(16);
 	
 	class Game {
 	  constructor () {
@@ -195,13 +195,13 @@
 	  }
 	
 	  addSky () {
-	    this.add(new Sky({ game: this, pos: [0, -62]}));
-	    this.add(new Sky({ game: this, pos: [832, -62]}));
+	    this.add(new Sky({ game: this, pos: [0, 0]}));
+	    this.add(new Sky({ game: this, pos: [832, 0]}));
 	  }
 	
 	  addSkyline () {
-	    this.add(new Skyline({ game: this, pos: [0, 278]}));
-	    this.add(new Skyline({ game: this, pos: [1664, 278]}));
+	    this.add(new Skyline({ game: this, pos: [0, 300]}));
+	    this.add(new Skyline({ game: this, pos: [1664, 300]}));
 	  }
 	
 	  addHitOverlay () {
@@ -352,7 +352,7 @@
 	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
 	    ctx.drawImage(
 	      this.image,                     // source image object
-	      (this.width * this.currentFrame) + 2, // source x
+	      (this.width * this.currentFrame) + 4, // source x
 	      0,                              // source y
 	      60,                             // source width
 	      60,                             // source height
@@ -908,7 +908,7 @@
 	  }
 	
 	  move () {
-	    this.pos = [this.pos[0] - 1.5, this.pos[1]];
+	    this.pos = [this.pos[0] - 1.0, this.pos[1]];
 	    this.wrap();
 	  }
 	
@@ -977,7 +977,7 @@
 	    this.game = options.game;
 	    this.pos = options.pos;
 	    this.width = 832;
-	    this.height = 340;
+	    this.height = 360;
 	    this.image = new Image();
 	    this.image.src = "lib/images/sky.png";
 	  }
@@ -1000,7 +1000,7 @@
 	  }
 	
 	  move () {
-	    this.pos = [this.pos[0] - 0.1, this.pos[1]];
+	    this.pos = [this.pos[0] - 0.2, this.pos[1]];
 	    this.wrap();
 	  }
 	
@@ -1076,6 +1076,71 @@
 
 /***/ },
 /* 15 */
+/***/ function(module, exports) {
+
+	class HitOverlay {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [0, 0];
+	    this.width = 800;
+	    this.height = 500;
+	    this.image = new Image();
+	    this.image.src = "lib/images/hit_overlay.png";
+	  }
+	
+	  move () {}
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = "rgba(255,0,0,0.5)";
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = HitOverlay;
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	class Message {
+	  constructor (message, game) {
+	    this.game = game;
+	    this.message = message;
+	    this.pos = [0, 180];
+	    this.width = 100;
+	    this.height = 50;
+	    this.transparency = 1;
+	  }
+	
+	  move () {
+	    this.pos[1] -= 1;
+	  }
+	
+	  draw (ctx) {
+	    this.transparency = this.transparency - 0.04;
+	
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	
+	    ctx.font = "18px arcade";
+	    ctx.fontStyle="bold";
+	    ctx.fillStyle = `rgba(252,45,28,${this.transparency})`;
+	    ctx.fillText(this.message, this.pos[0] + 150, this.pos[1] + 20);
+	
+	    ctx.strokeStyle = "black";
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = Message;
+
+
+/***/ },
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const GameView = __webpack_require__(6);
@@ -1132,71 +1197,6 @@
 	}
 	
 	module.exports = LandingPage;
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	class HitOverlay {
-	  constructor (game) {
-	    this.game = game;
-	    this.pos = [0, 0];
-	    this.width = 800;
-	    this.height = 500;
-	    this.image = new Image();
-	    this.image.src = "lib/images/hit_overlay.png";
-	  }
-	
-	  move () {}
-	
-	  draw (ctx) {
-	    ctx.beginPath();
-	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
-	    ctx.fillStyle = "rgba(255,0,0,0.5)";
-	    ctx.fill();
-	    ctx.closePath();
-	  }
-	}
-	
-	module.exports = HitOverlay;
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-	class Message {
-	  constructor (message, game) {
-	    this.game = game;
-	    this.message = message;
-	    this.pos = [0, 180];
-	    this.width = 100;
-	    this.height = 50;
-	    this.transparency = 1;
-	  }
-	
-	  move () {
-	    this.pos[1] -= 1;
-	  }
-	
-	  draw (ctx) {
-	    this.transparency = this.transparency - 0.04;
-	
-	    ctx.beginPath();
-	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
-	
-	    ctx.font = "18px arcade";
-	    ctx.fontStyle="bold";
-	    ctx.fillStyle = `rgba(252,45,28,${this.transparency})`;
-	    ctx.fillText(this.message, this.pos[0] + 150, this.pos[1] + 20);
-	
-	    ctx.strokeStyle = "black";
-	    ctx.closePath();
-	  }
-	}
-	
-	module.exports = Message;
 
 
 /***/ }
