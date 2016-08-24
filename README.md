@@ -2,8 +2,7 @@
 
 Street Dodger is an arcade-style timing game built with HTML5 Canvas and JavaScript, inspired by games like Pa-Rappa the Rapper and Guitar Hero.
 
-Live link:
-https://jfriestedt.github.io/Street-Dodger/
+[Live Site][live-site]
 
 ## Overview
 
@@ -33,3 +32,4 @@ Levels increment indefinitely over the course of a game. Each levels brings fast
 [damage]: ./docs/images/Damage.gif
 [points]: ./docs/images/Points.gif
 [levels]: ./docs/images/Levels.gif
+[live-site]: http://jonfriestedt.com/Street-Dodger
