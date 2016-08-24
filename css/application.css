@@ -1,7 +1,87 @@
-* {
-  padding: 0; margin: 0;
+html, body, header, nav, h1, a,
+ul, li, strong, main, button, i,
+section, img, div, h1, h2, h3, h4, h5, h6, p, form,
+fieldset, label, textarea, hgroup,
+span, article, footer, time, small, hr,
+input, img {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-decoration: inherit;
+  vertical-align: inherit;
+  box-sizing: inherit;
+  background: transparent;
+  display: inherit;
+}
+
+body {
+  background: #ccc;
+  font-family: arcade;
+}
+
+#content {
+  width: 800px;
+  text-align: center;
+  margin: 50px auto;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 3em;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 1px 2px 2px #fc2d1c;
+}
+
+h2 {
+  font-size: 1.5em;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 1px 2px 2px #fc2d1c;
+}
+
+a {
+  margin: 0;
+  font-size: 1em;
+  padding: 1rem;
+  color: #fc2d1c;
+  transition: all 0.1s ease;
+  text-shadow: 1px 2px 2px #aaa;
+  display: inline;
+}
+
+p {
+  font-size: 0.8em;
+}
+
+p > a {
+  padding: 0.8em 0;
+}
+
+a:hover {
+  background: #fc2d1c;
+  color: white;
 }
 
 canvas {
-  background: #eee; display: block; margin: 100px auto;
+  background: #eee; display: block;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+
+@font-face {
+    font-family: 'arcade';
+    src: url('ARCADE_N.TTF');
+    src: url('ARCADE_N.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
 }

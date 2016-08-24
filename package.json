@@ -7,6 +7,7 @@
     "doc": "docs"
   },
   "dependencies": {
+    "sass": "^0.5.0",
     "webpack": "^1.13.2"
   },
   "devDependencies": {},
