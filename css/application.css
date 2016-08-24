@@ -64,6 +64,7 @@ p {
 
 p > a {
   padding: 0.8em 0;
+  color: white;
 }
 
 a:hover {

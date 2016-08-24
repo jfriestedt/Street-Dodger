@@ -414,14 +414,42 @@
 	    this.currentFrame = 0;
 	    this.frames = 7;
 	    this.frameOccurences = 0;
+	    this.dodging = false;
+	  }
+	
+	  checkDodging () {
+	    if (this.dodging === true) {
+	      if (this.width < 70) {
+	        this.width += 2;
+	        this.height += 2;
+	      }
+	    } else {
+	      if (this.width > 60) {
+	        this.width -= 2;
+	        this.height -= 2;
+	      }
+	    }
+	  }
+	
+	  dodge () {
+	    window.clearTimeout(this.timeout);
+	    this.dodging = true;
+	    // debugger
+	    this.timeout = window.setTimeout(this.resetDodging.bind(this), 1000);
+	  }
+	
+	  resetDodging () {
+	    this.dodging = false;
 	  }
 	
 	  draw (ctx) {
+	    this.checkDodging();
+	
 	    ctx.beginPath();
 	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
 	    ctx.drawImage(
 	      this.image,                     // source image object
-	      (this.width * this.currentFrame) + 2, // source x
+	      (60 * this.currentFrame) + 2, // source x
 	      0,                              // source y
 	      60,                             // source width
 	      60,                             // source height
@@ -611,15 +639,19 @@
 	    switch (e.keyCode) {
 	      case 81:
 	        this.keyPresses["q"] = true;
+	        this.game.players[0].dodge();
 	        break;
 	      case 87:
 	        this.keyPresses["w"] = true;
+	        this.game.players[0].dodge();
 	        break;
 	      case 69:
 	        this.keyPresses["e"] = true;
+	        this.game.players[0].dodge();
 	        break;
 	      case 82:
 	        this.keyPresses["r"] = true;
+	        this.game.players[0].dodge();
 	        break;
 	    }
 	    this.updateDodgeZone();
