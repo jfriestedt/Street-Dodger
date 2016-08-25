@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const LandingPage = __webpack_require__(17);
+	const LandingPage = __webpack_require__(18);
 	
 	window.Game = Game;
 	window.Pedestrian = __webpack_require__(2);
@@ -66,20 +66,21 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// const Misc = require("./misc");
+	const DodgeKey = __webpack_require__(7);
+	const DodgeZone = __webpack_require__(5);
+	const GameOver = __webpack_require__(14);
+	const Ground = __webpack_require__(11);
+	const HealthBar = __webpack_require__(9);
+	const HitOverlay = __webpack_require__(15);
+	const LevelBanner = __webpack_require__(17);
+	const Message = __webpack_require__(16);
+	const MissZone = __webpack_require__(10);
+	const Particle = __webpack_require__(19);
 	const Pedestrian = __webpack_require__(2);
 	const Player = __webpack_require__(4);
-	const DodgeZone = __webpack_require__(5);
-	const DodgeKey = __webpack_require__(7);
 	const ScoreCounter = __webpack_require__(8);
-	const HealthBar = __webpack_require__(9);
-	const MissZone = __webpack_require__(10);
-	const Ground = __webpack_require__(11);
-	const Skyline = __webpack_require__(12);
 	const Sky = __webpack_require__(13);
-	const GameOver = __webpack_require__(14);
-	const HitOverlay = __webpack_require__(15);
-	const Message = __webpack_require__(16);
+	const Skyline = __webpack_require__(12);
 	
 	class Game {
 	  constructor () {
@@ -91,9 +92,11 @@
 	    this.scoreCounter = [];
 	    this.healthBar = [];
 	    this.hitOverlay = [];
+	    this.levelBanners = [];
 	    this.message = [];
 	    this.missZone = [];
 	    this.ground = [];
+	    this.particles = [];
 	    this.skyline = [];
 	    this.sky = [];
 	    this.pedestrianSpeed = 2;
@@ -134,7 +137,17 @@
 	      this.hitOverlay.push(object);
 	    } else if (object instanceof Message) {
 	      this.message.push(object);
+	    } else if (object instanceof LevelBanner) {
+	      this.levelBanners.push(object);
+	    } else if (object instanceof Particle) {
+	      this.particles.push(object);
 	    }
+	  }
+	
+	  addDodgeZone () {
+	    const dodgeZone = new DodgeZone(this);
+	    this.add(dodgeZone);
+	    return dodgeZone;
 	  }
 	
 	  addGround () {
@@ -142,28 +155,39 @@
 	    this.add(new Ground({ game: this, pos: [1536, 387]}));
 	  }
 	
-	  spawnPedestrians () {''
-	    let levelTransition = false;
+	  addHealthBar () {
+	    this.add(new HealthBar(this));
+	  }
 	
-	    if (this.levelPedestrianCount > 20) {
-	      this.pedestrianSpeed++;
-	      this.levelPedestrianCount = 0;
-	      this.levelNumber++;
-	      console.log(`Level ${this.levelNumber}`);
-	      levelTransition = true;
+	  addHitOverlay () {
+	    this.add(new HitOverlay(this));
+	    window.setTimeout(this.removeHitOverlay.bind(this), 70);
+	  }
+	
+	  addLevelBanner () {
+	    this.add(new LevelBanner(this));
+	  }
+	
+	  addMessage (message) {
+	    window.clearTimeout(this.messageTimeout);
+	    this.add(new Message(message, this));
+	    this.messageTimeout = window.setTimeout(this.removeMessage.bind(this), 500);
+	  }
+	
+	  addMissZone () {
+	    this.add(new MissZone(this));
+	  }
+	
+	  addParticles () {
+	    window.clearTimeout(this.particlesTimeout);
+	    let particles = 0;
+	
+	    while (particles < 50) {
+	      this.add(new Particle(this));
+	      particles ++;
 	    }
 	
-	    let delay;
-	    if (levelTransition) {
-	      delay = 5000;
-	    } else {
-	      delay = Game.INTERVALS[Math.floor(Math.random() * 4)];
-	    }
-	
-	    window.setTimeout(this.addPedestrian.bind(this), delay);
-	    window.clearTimeout();
-	    this.levelPedestrianCount++;
-	    window.setTimeout(this.spawnPedestrians.bind(this), delay);
+	    this.particlesTimeout = setTimeout(this.removeParticles.bind(this), 1000);
 	  }
 	
 	  addPedestrian (game) {
@@ -174,20 +198,6 @@
 	    const player = new Player(this);
 	    this.add(player);
 	    return player;
-	  }
-	
-	  addDodgeZone () {
-	    const dodgeZone = new DodgeZone(this);
-	    this.add(dodgeZone);
-	    return dodgeZone;
-	  }
-	
-	  addHealthBar () {
-	    this.add(new HealthBar(this));
-	  }
-	
-	  addMissZone () {
-	    this.add(new MissZone(this));
 	  }
 	
 	  addScoreCounter () {
@@ -204,33 +214,16 @@
 	    this.add(new Skyline({ game: this, pos: [1664, 300]}));
 	  }
 	
-	  addHitOverlay () {
-	    this.add(new HitOverlay(this));
-	    window.setTimeout(this.removeHitOverlay.bind(this), 70);
-	  }
-	
-	  addMessage (message) {
-	    window.clearTimeout(this.messageTimeout);
-	    this.add(new Message(message, this));
-	    this.messageTimeout = window.setTimeout(this.removeMessage.bind(this), 500);
-	  }
-	
-	  removeHitOverlay () {
-	    this.hitOverlay = [];
-	  }
-	
-	  removeMessage () {
-	    this.message.shift();
-	  }
-	
 	  allObjects () {
 	    return [].concat(
 	      this.sky,
 	      this.skyline,
 	      this.ground,
+	      this.levelBanners,
 	      this.dodgeKeys,
 	      this.pedestrians,
 	      this.players,
+	      this.particles,
 	      this.dodgeZone,
 	      this.dodgeKeys,
 	      this.scoreCounter,
@@ -277,6 +270,49 @@
 	    });
 	  }
 	
+	  removeHitOverlay () {
+	    this.hitOverlay = [];
+	  }
+	
+	  removeMessage () {
+	    this.message.shift();
+	  }
+	
+	  removeLevelBanner () {
+	    this.levelBanners.shift();
+	  }
+	
+	  removeParticles () {
+	    this.particles = [];
+	  }
+	
+	  spawnPedestrians () {
+	    let levelTransition = false;
+	
+	    if (this.levelPedestrianCount > 20) {
+	      this.pedestrianSpeed++;
+	      this.levelPedestrianCount = 0;
+	      this.levelNumber++;
+	      console.log(`Level ${this.levelNumber}`);
+	      levelTransition = true;
+	      this.addLevelBanner();
+	    }
+	
+	    let delay;
+	    if (levelTransition) {
+	      delay = 10000 - (this.pedestrianSpeed * 300);
+	    } else {
+	      delay = (
+	        Game.INTERVALS[Math.floor(Math.random() * 4)]
+	      ) / this.pedestrianSpeed;
+	    }
+	
+	    window.setTimeout(this.addPedestrian.bind(this), delay);
+	    window.clearTimeout();
+	    this.levelPedestrianCount++;
+	    window.setTimeout(this.spawnPedestrians.bind(this), delay);
+	  }
+	
 	  sendDamage (damage) {
 	    this.healthBar[0].registerDamage(damage);
 	    this.addHitOverlay();
@@ -291,6 +327,7 @@
 	
 	  updateScore (points, message) {
 	    this.addMessage(message);
+	    this.addParticles();
 	    this.scoreCounter[0].addPoints(points);
 	  }
 	}
@@ -298,29 +335,7 @@
 	Game.DIM_X = 800;
 	Game.DIM_Y = 500;
 	Game.BG_COLOR = "#ccc";
-	Game.INTERVALS = [500, 1000, 1500, 2000];
-	
-	// Game.prototype.draw = function (ctx) {
-	//   ctx.clearRect(0, 0, Game.DIM_X, Game.DIM_Y);
-	//   ctx.fillStyle = Game.BG_COLOR;
-	//   ctx.fillRect(0, 0, Game.DIM_X, Game.DIM_Y);
-	//
-	//   drawPlayer();
-	//   drawPedestrian();
-	//
-	//   colorDodgeWindow();
-	//   drawDodgeWindow();
-	//
-	//   drawDodgeKey();
-	//
-	//   dodgeKeyIsCollidedWithWindow();
-	//
-	//   pedestrianX += dx;
-	//   pedestrianY += dy;
-	//   dodgeKeyX += dx;
-	//   dodgeKeyY += dy;
-	//   window.requestAnimationFrame(this.draw);
-	// }
+	Game.INTERVALS = [1500, 2500, 3500, 4500];
 	
 	module.exports = Game;
 
@@ -1145,6 +1160,51 @@
 
 /***/ },
 /* 17 */
+/***/ function(module, exports) {
+
+	class LevelBanner {
+	  constructor (game) {
+	    this.game = game;
+	    this.message = `LEVEL ${this.game.levelNumber}`;
+	    this.pos = [2000, 100];
+	    this.width = 200;
+	    this.height = 70;
+	  }
+	
+	  move () {
+	    this.pos[0] -= (this.game.pedestrianSpeed);
+	  }
+	
+	  removeSelfIfOffscreen () {
+	    if (this.pos[0] < -800) {
+	      this.game.removeLevelBanner();
+	    }
+	  }
+	
+	  draw (ctx) {
+	    this.removeSelfIfOffscreen();
+	
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = "#444";
+	    ctx.fill();
+	
+	    ctx.font = "25px arcade";
+	    ctx.textAlign = 'center';
+	    ctx.fillStyle = "white";
+	    ctx.fillText(this.message, this.pos[0] + 100, this.pos[1] + 40);
+	
+	    ctx.strokeStyle = "black";
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = LevelBanner;
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const GameView = __webpack_require__(6);
@@ -1201,6 +1261,58 @@
 	}
 	
 	module.exports = LandingPage;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	class Particle {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [170, 240];
+	    this.direction = [
+	      Math.random() * 2 - 1,
+	      Math.random() * 2 - 1
+	    ];
+	    this.size = Particle.SIZES[
+	      Math.floor(Math.random() * Particle.SIZES.length)
+	    ];
+	    this.opacity = 1;
+	    this.RGBS = [
+	      `150,186,180`,
+	      `126,130,249`,
+	      `13,141,255`
+	    ];
+	    // red,  blue, yellow
+	    this.rgbs = this.RGBS[
+	      Math.floor(Math.random() * this.RGBS.length)
+	    ];
+	    this.opacity = 1;
+	  }
+	
+	  move () {
+	    this.pos[0] += 6 * this.direction[0];
+	    this.pos[1] += 6 * this.direction[1];
+	  }
+	
+	  reassignColor () {
+	    this.color = this.color;
+	  }
+	
+	  draw (ctx) {
+	    this.opacity -= 0.05;
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+	    ctx.fillStyle = `rgba(${this.rgbs},${this.opacity})`;
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	}
+	
+	Particle.SIZES = [[1, 1], [7, 7], [5, 5], [3, 3]];
+	
+	module.exports = Particle;
 
 
 /***/ }
