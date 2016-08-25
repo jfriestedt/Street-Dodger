@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1);
-	const LandingPage = __webpack_require__(18);
+	const LandingPage = __webpack_require__(17);
 	
 	window.Game = Game;
 	window.Pedestrian = __webpack_require__(2);
@@ -72,7 +72,7 @@
 	const Ground = __webpack_require__(11);
 	const HealthBar = __webpack_require__(9);
 	const HitOverlay = __webpack_require__(15);
-	const LevelBanner = __webpack_require__(17);
+	const LevelBanner = __webpack_require__(18);
 	const Message = __webpack_require__(16);
 	const MissZone = __webpack_require__(10);
 	const Particle = __webpack_require__(19);
@@ -664,6 +664,17 @@
 	    };
 	  }
 	
+	  animate (time) {
+	    const timeDelta = time - this.lastTime;
+	    this.game.step(timeDelta);
+	    this.game.draw(this.ctx);
+	    this.lastTime = time;
+	
+	    if (!this.game.over) {
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }
+	
 	  bindKeyHandlers () {
 	    document.addEventListener("keydown", this.keyDownHandler.bind(this), false);
 	    document.addEventListener("keyup", this.keyUpHandler.bind(this), false);
@@ -674,17 +685,6 @@
 	    this.lastTime = 0;
 	    this.game.spawnPedestrians();
 	    requestAnimationFrame(this.animate.bind(this));
-	  }
-	
-	  animate (time) {
-	    const timeDelta = time - this.lastTime;
-	    this.game.step(timeDelta);
-	    this.game.draw(this.ctx);
-	    this.lastTime = time;
-	
-	    if (!this.game.over) {
-	      requestAnimationFrame(this.animate.bind(this));
-	    }
 	  }
 	
 	  updateDodgeZone () {
@@ -699,25 +699,24 @@
 	
 	    if (!keyPressed) { this.dodgeZone.deactivate(); }
 	  }
-	
 	  keyDownHandler (e) {
 	    switch (e.keyCode) {
 	      case 81:
-	        this.keyPresses["q"] = true;
-	        this.game.players[0].dodge();
-	        break;
+	      this.keyPresses["q"] = true;
+	      this.game.players[0].dodge();
+	      break;
 	      case 87:
-	        this.keyPresses["w"] = true;
-	        this.game.players[0].dodge();
-	        break;
+	      this.keyPresses["w"] = true;
+	      this.game.players[0].dodge();
+	      break;
 	      case 69:
-	        this.keyPresses["e"] = true;
-	        this.game.players[0].dodge();
-	        break;
+	      this.keyPresses["e"] = true;
+	      this.game.players[0].dodge();
+	      break;
 	      case 82:
-	        this.keyPresses["r"] = true;
-	        this.game.players[0].dodge();
-	        break;
+	      this.keyPresses["r"] = true;
+	      this.game.players[0].dodge();
+	      break;
 	    }
 	    this.updateDodgeZone();
 	  }
@@ -725,20 +724,21 @@
 	  keyUpHandler (e) {
 	    switch (e.keyCode) {
 	      case 81:
-	        this.keyPresses["q"] = false;
-	        break;
+	      this.keyPresses["q"] = false;
+	      break;
 	      case 87:
-	        this.keyPresses["w"] = false;
-	        break;
+	      this.keyPresses["w"] = false;
+	      break;
 	      case 69:
-	        this.keyPresses["e"] = false;
-	        break;
+	      this.keyPresses["e"] = false;
+	      break;
 	      case 82:
-	        this.keyPresses["r"] = false;
-	        break;
+	      this.keyPresses["r"] = false;
+	      break;
 	    }
 	    this.updateDodgeZone();
 	  }
+	
 	}
 	
 	module.exports = GameView;
@@ -1160,51 +1160,6 @@
 
 /***/ },
 /* 17 */
-/***/ function(module, exports) {
-
-	class LevelBanner {
-	  constructor (game) {
-	    this.game = game;
-	    this.message = `LEVEL ${this.game.levelNumber}`;
-	    this.pos = [2000, 100];
-	    this.width = 200;
-	    this.height = 70;
-	  }
-	
-	  move () {
-	    this.pos[0] -= (this.game.pedestrianSpeed);
-	  }
-	
-	  removeSelfIfOffscreen () {
-	    if (this.pos[0] < -800) {
-	      this.game.removeLevelBanner();
-	    }
-	  }
-	
-	  draw (ctx) {
-	    this.removeSelfIfOffscreen();
-	
-	    ctx.beginPath();
-	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
-	    ctx.fillStyle = "#444";
-	    ctx.fill();
-	
-	    ctx.font = "25px arcade";
-	    ctx.textAlign = 'center';
-	    ctx.fillStyle = "white";
-	    ctx.fillText(this.message, this.pos[0] + 100, this.pos[1] + 40);
-	
-	    ctx.strokeStyle = "black";
-	    ctx.stroke();
-	    ctx.closePath();
-	  }
-	}
-	
-	module.exports = LevelBanner;
-
-
-/***/ },
-/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	const GameView = __webpack_require__(6);
@@ -1261,6 +1216,51 @@
 	}
 	
 	module.exports = LandingPage;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	class LevelBanner {
+	  constructor (game) {
+	    this.game = game;
+	    this.message = `LEVEL ${this.game.levelNumber}`;
+	    this.pos = [2000, 100];
+	    this.width = 200;
+	    this.height = 70;
+	  }
+	
+	  move () {
+	    this.pos[0] -= (this.game.pedestrianSpeed);
+	  }
+	
+	  removeSelfIfOffscreen () {
+	    if (this.pos[0] < -800) {
+	      this.game.removeLevelBanner();
+	    }
+	  }
+	
+	  draw (ctx) {
+	    this.removeSelfIfOffscreen();
+	
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = "#444";
+	    ctx.fill();
+	
+	    ctx.font = "25px arcade";
+	    ctx.textAlign = 'center';
+	    ctx.fillStyle = "white";
+	    ctx.fillText(this.message, this.pos[0] + 100, this.pos[1] + 40);
+	
+	    ctx.strokeStyle = "black";
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = LevelBanner;
 
 
 /***/ },
