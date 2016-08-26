@@ -293,7 +293,6 @@
 	      this.pedestrianSpeed++;
 	      this.levelPedestrianCount = 0;
 	      this.levelNumber++;
-	      console.log(`Level ${this.levelNumber}`);
 	      levelTransition = true;
 	      this.addLevelBanner();
 	    }
