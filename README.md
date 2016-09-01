@@ -12,7 +12,44 @@ The object of Street Dodger is last as long as you can scoring points by dodging
 
 ## Points & Scoring
 
-Successful dodges are scored by calculating the amount of overlap between the "dodge zone" and its overlapping dodge key. A point value is assigned and added to the upper-right score display, and a message is flashed based on your accuracy.
+Successful dodges are scored by calculating the amount of overlap between the blue "dodge zone" and its overlapping dodge key. A point value is assigned and added to the upper-right score display, and a message is created based on your accuracy.
+
+This feature took a bit of tricky collision case-handling to account for which side of the dodge zone the dodge key is on when a hit is registered, but the result is what makes a game of StreetDodger scoreable and arcade-like:
+
+```javascript
+scoreHit () {
+  let dodgeZoneMin = this.pos[0];
+  let dodgeZoneMax = this.pos[0] + 50;
+  let dodgeKeyMin = this.collidedDodgeKey.pos[0];
+  let dodgeKeyMax = this.collidedDodgeKey.pos[0] + 50;
+  let overlap;
+
+  if (dodgeKeyMin >= dodgeZoneMin) {
+    overlap = dodgeZoneMax - dodgeKeyMin;
+  } else {
+    overlap = dodgeKeyMax - dodgeZoneMin;
+  }
+
+  let points = overlap * 10;
+  let message;
+
+  if (points < 100) {
+    message = "LAME!";
+  } else if (points < 200) {
+    message = "OK!";
+  } else if (points < 300) {
+    message = "GOOD!";
+  } else if (points < 400) {
+    message = "GREAT!";
+  } else if (points <= 500) {
+    message = "EXCELLENT!";
+  }
+
+  this.game.updateScore(points, message);
+}
+```
+
+Once the point value and message have been created, they are sent to the game, which uses them to update the game's total score and display the message to the screen.
 
 ![points]
 
