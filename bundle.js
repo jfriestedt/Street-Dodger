@@ -252,7 +252,7 @@
 	
 	    if (this.over) {
 	      let newGame = new Game();
-	      new GameOver(newGame).display();
+	      new GameOver(newGame, this.scoreCounter[0].scoreCount).display();
 	    } else {
 	      this.allObjects().forEach((object) => {
 	        object.draw(ctx);
@@ -347,17 +347,46 @@
 
 	const ScrollingObject = __webpack_require__(3);
 	
-	class DodgeKey extends ScrollingObject {
+	class DodgeKey {
 	  constructor(options = {}) {
 	    let pedestrian = options.pedestrian;
 	
-	    options.color = "white";
-	    options.pos = [pedestrian.pos[0] - 20, 220];
-	    options.speed = pedestrian.speed / 2;
-	    options.width = 50;
-	    options.height = 50;
-	    super(options);
-	    this.value = ['q', 'w', 'e', 'r'][Math.floor(Math.random() * 4)];
+	    this.color = "white";
+	    this.pos = [pedestrian.pos[0] - 20, 220];
+	    this.speed = pedestrian.speed / 2;
+	    this.width = 50;
+	    this.height = 50;
+	    this.value = ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)];
+	    this.image = new Image();
+	    this.image.src = `lib/images/${this.value}.png`;
+	  }
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	
+	    ctx.fillStyle = this.color;
+	    ctx.fill();
+	
+	    ctx.drawImage(
+	      this.image,
+	      0,
+	      0,
+	      this.width,
+	      this.height,
+	      this.pos[0],
+	      this.pos[1],
+	      this.width,
+	      this.height
+	    );
+	
+	    ctx.strokeStyle = "black";
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
+	
+	  move() {
+	    this.pos = [this.pos[0] + this.speed, this.pos[1]];
 	  }
 	}
 	
@@ -559,20 +588,20 @@
 	
 	  keyDownHandler (e) {
 	    switch (e.keyCode) {
-	      case 81:
-	      this.keyPresses["q"] = true;
+	      case 38:
+	      this.keyPresses["up"] = true;
 	      this.game.players[0].dodge();
 	      break;
-	      case 87:
-	      this.keyPresses["w"] = true;
+	      case 40:
+	      this.keyPresses["down"] = true;
 	      this.game.players[0].dodge();
 	      break;
-	      case 69:
-	      this.keyPresses["e"] = true;
+	      case 37:
+	      this.keyPresses["left"] = true;
 	      this.game.players[0].dodge();
 	      break;
-	      case 82:
-	      this.keyPresses["r"] = true;
+	      case 39:
+	      this.keyPresses["right"] = true;
 	      this.game.players[0].dodge();
 	      break;
 	    }
@@ -581,17 +610,17 @@
 	
 	  keyUpHandler (e) {
 	    switch (e.keyCode) {
-	      case 81:
-	      this.keyPresses["q"] = false;
+	      case 38:
+	      this.keyPresses["up"] = false;
 	      break;
-	      case 87:
-	      this.keyPresses["w"] = false;
+	      case 40:
+	      this.keyPresses["down"] = false;
 	      break;
-	      case 69:
-	      this.keyPresses["e"] = false;
+	      case 37:
+	      this.keyPresses["left"] = false;
 	      break;
-	      case 82:
-	      this.keyPresses["r"] = false;
+	      case 39:
+	      this.keyPresses["right"] = false;
 	      break;
 	    }
 	    this.updateDodgeZone();
@@ -629,7 +658,7 @@
 	const Game = __webpack_require__(1);
 	
 	class GameOver {
-	  constructor (newGame) {
+	  constructor (newGame, score) {
 	    const canvas = document.getElementById("sdCanvas");
 	    this.ctx = canvas.getContext("2d");
 	    this.width = 800;
@@ -637,6 +666,8 @@
 	    this.image = new Image();
 	    this.image.src = "lib/images/game_over.png";
 	    this.game = newGame;
+	    this.score = score;
+	    this.active = true;
 	  }
 	
 	  bindKeyHandlers () {
@@ -651,20 +682,40 @@
 	  }
 	
 	  draw (ctx) {
-	    ctx.beginPath();
-	    ctx.rect(0, 0, this.width, this.height);
-	    ctx.drawImage(
-	      this.image,
-	      0,
-	      0,
-	      this.width,
-	      this.height,
-	      0,
-	      0,
-	      this.width,
-	      this.height
-	    );
-	    ctx.closePath();
+	    if (this.active) {
+	      ctx.beginPath();
+	      ctx.rect(0, 0, this.width, this.height);
+	      ctx.fillStyle = "white";
+	      ctx.fill();
+	
+	      ctx.font = "50px arcade";
+	      ctx.textAlign = 'center';
+	      ctx.fillStyle = "RED";
+	      ctx.fillText("GAME OVER", 400, 200);
+	
+	      ctx.font = "25px arcade";
+	      ctx.textAlign = 'center';
+	      ctx.fillStyle = "black";
+	      ctx.fillText(`YOUR SCORE: ${this.score}`, 400, 300);
+	
+	      ctx.font = "25px arcade";
+	      ctx.textAlign = 'center';
+	      ctx.fillStyle = "black";
+	      ctx.fillText("PRESS ENTER TO PLAY AGAIN", 400, 400);
+	
+	      // ctx.drawImage(
+	      //   this.image,
+	      //   0,
+	      //   0,
+	      //   this.width,
+	      //   this.height,
+	      //   0,
+	      //   0,
+	      //   this.width,
+	      //   this.height
+	      // );
+	      ctx.closePath();
+	    }
 	  }
 	
 	  keyDownHandler (e) {
@@ -680,6 +731,7 @@
 	    if (!this.gameView) {
 	      this.gameView = new GameView(this.game, this.ctx);
 	      this.gameView.start();
+	      this.active = false;
 	    }
 	  }
 	}
@@ -1021,15 +1073,15 @@
 	    ctx.beginPath();
 	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
 	    ctx.drawImage(
-	      this.image,                     // source image object
+	      this.image,                           // source image object
 	      (this.width * this.currentFrame) + 4, // source x
-	      0,                              // source y
-	      60,                             // source width
-	      60,                             // source height
-	      this.pos[0],                    // destination x
-	      this.pos[1],                    // destination y
-	      this.width,                 // destination width
-	      this.height);               // destination height
+	      0,                                    // source y
+	      60,                                   // source width
+	      60,                                   // source height
+	      this.pos[0],                          // destination x
+	      this.pos[1],                          // destination y
+	      this.width,                           // destination width
+	      this.height);                         // destination height
 	
 	    if (this.currentFrame === this.frames) {
 	      this.currentFrame = 0;
