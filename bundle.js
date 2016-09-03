@@ -589,18 +589,22 @@
 	  keyDownHandler (e) {
 	    switch (e.keyCode) {
 	      case 38:
+	      e.preventDefault();
 	      this.keyPresses["up"] = true;
 	      this.game.players[0].dodge();
 	      break;
 	      case 40:
+	      e.preventDefault();
 	      this.keyPresses["down"] = true;
 	      this.game.players[0].dodge();
 	      break;
 	      case 37:
+	      e.preventDefault();
 	      this.keyPresses["left"] = true;
 	      this.game.players[0].dodge();
 	      break;
 	      case 39:
+	      e.preventDefault();
 	      this.keyPresses["right"] = true;
 	      this.game.players[0].dodge();
 	      break;
@@ -611,15 +615,19 @@
 	  keyUpHandler (e) {
 	    switch (e.keyCode) {
 	      case 38:
+	      e.preventDefault();
 	      this.keyPresses["up"] = false;
 	      break;
 	      case 40:
+	      e.preventDefault();
 	      this.keyPresses["down"] = false;
 	      break;
 	      case 37:
+	      e.preventDefault();
 	      this.keyPresses["left"] = false;
 	      break;
 	      case 39:
+	      e.preventDefault();
 	      this.keyPresses["right"] = false;
 	      break;
 	    }
@@ -703,17 +711,6 @@
 	      ctx.fillStyle = "black";
 	      ctx.fillText("PRESS ENTER TO PLAY AGAIN", 400, 400);
 	
-	      // ctx.drawImage(
-	      //   this.image,
-	      //   0,
-	      //   0,
-	      //   this.width,
-	      //   this.height,
-	      //   0,
-	      //   0,
-	      //   this.width,
-	      //   this.height
-	      // );
 	      ctx.closePath();
 	    }
 	  }
@@ -728,11 +725,9 @@
 	  }
 	
 	  startGame () {
-	    if (!this.gameView) {
-	      this.gameView = new GameView(this.game, this.ctx);
-	      this.gameView.start();
-	      this.active = false;
-	    }
+	    this.gameView = new GameView(this.game, this.ctx);
+	    this.gameView.start();
+	    this.active = false;
 	  }
 	}
 	
