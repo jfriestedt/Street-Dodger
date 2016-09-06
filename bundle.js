@@ -66,12 +66,12 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
+	const DamageOverlay = __webpack_require__(9);
 	const DodgeKey = __webpack_require__(2);
 	const DodgeZone = __webpack_require__(4);
 	const GameOver = __webpack_require__(6);
 	const Ground = __webpack_require__(7);
 	const HealthBar = __webpack_require__(8);
-	const HitOverlay = __webpack_require__(9);
 	const LevelBanner = __webpack_require__(10);
 	const Message = __webpack_require__(11);
 	const MissZone = __webpack_require__(12);
@@ -91,7 +91,7 @@
 	    this.dodgeKeys = [];
 	    this.scoreCounter = [];
 	    this.healthBar = [];
-	    this.hitOverlay = [];
+	    this.damageOverlay = [];
 	    this.levelBanners = [];
 	    this.message = [];
 	    this.missZone = [];
@@ -133,8 +133,8 @@
 	      this.skyline.push(object);
 	    } else if (object instanceof Sky) {
 	      this.sky.push(object);
-	    } else if (object instanceof HitOverlay) {
-	      this.hitOverlay.push(object);
+	    } else if (object instanceof DamageOverlay) {
+	      this.damageOverlay.push(object);
 	    } else if (object instanceof Message) {
 	      this.message.push(object);
 	    } else if (object instanceof LevelBanner) {
@@ -159,9 +159,9 @@
 	    this.add(new HealthBar(this));
 	  }
 	
-	  addHitOverlay () {
-	    this.add(new HitOverlay(this));
-	    window.setTimeout(this.removeHitOverlay.bind(this), 70);
+	  addDamageOverlay () {
+	    this.add(new DamageOverlay(this));
+	    window.setTimeout(this.removeDamageOverlay.bind(this), 70);
 	  }
 	
 	  addLevelBanner () {
@@ -230,7 +230,7 @@
 	      this.healthBar,
 	      this.missZone,
 	      this.message,
-	      this.hitOverlay
+	      this.damageOverlay
 	    );
 	  }
 	
@@ -270,8 +270,8 @@
 	    });
 	  }
 	
-	  removeHitOverlay () {
-	    this.hitOverlay = [];
+	  removeDamageOverlay () {
+	    this.damageOverlay = [];
 	  }
 	
 	  removeMessage () {
@@ -316,7 +316,7 @@
 	
 	  sendDamage (damage) {
 	    this.healthBar[0].registerDamage(damage);
-	    this.addHitOverlay();
+	    this.addDamageOverlay();
 	  }
 	
 	  step (delta) {
@@ -830,7 +830,7 @@
 /* 9 */
 /***/ function(module, exports) {
 
-	class HitOverlay {
+	class DamageOverlay {
 	  constructor (game) {
 	    this.game = game;
 	    this.pos = [0, 0];
@@ -851,7 +851,7 @@
 	  }
 	}
 	
-	module.exports = HitOverlay;
+	module.exports = DamageOverlay;
 
 
 /***/ },
@@ -996,41 +996,40 @@
 	class Particle {
 	  constructor (game) {
 	    this.game = game;
+	    this.opacity = 1;
 	    this.pos = [170, 240];
-	    this.direction = [
-	      Math.random() * 2 - 1,
-	      Math.random() * 2 - 1
-	    ];
 	    this.size = Particle.SIZES[
 	      Math.floor(Math.random() * Particle.SIZES.length)
 	    ];
-	    this.opacity = 1;
-	    this.RGBS = [
-	      `150,186,180`,
-	      `126,130,249`,
-	      `13,141,255`
+	    this.rgb = Particle.RGBS[
+	      Math.floor(Math.random() * Particle.RGBS.length)
 	    ];
-	    // red,  blue, yellow
-	    this.rgbs = this.RGBS[
-	      Math.floor(Math.random() * this.RGBS.length)
+	    this.vector = [
+	      Math.random() * 2 - 1,
+	      Math.random() * 2 - 1
 	    ];
-	    this.opacity = 1;
-	  }
-	
-	  move () {
-	    this.pos[0] += 6 * this.direction[0];
-	    this.pos[1] += 6 * this.direction[1];
 	  }
 	
 	  draw (ctx) {
 	    this.opacity -= 0.05;
 	    ctx.beginPath();
 	    ctx.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
-	    ctx.fillStyle = `rgba(${this.rgbs},${this.opacity})`;
+	    ctx.fillStyle = `rgba(${this.rgb},${this.opacity})`;
 	    ctx.fill();
 	    ctx.closePath();
 	  }
+	
+	  move () {
+	    this.pos[0] += 6 * this.vector[0];
+	    this.pos[1] += 6 * this.vector[1];
+	  }
 	}
+	
+	Particle.RGBS = [
+	  `150,186,180`,
+	  `126,130,249`,
+	  `13,141,255`
+	];
 	
 	Particle.SIZES = [[1, 1], [7, 7], [5, 5], [3, 3]];
 	

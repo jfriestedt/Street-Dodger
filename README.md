@@ -65,6 +65,54 @@ Levels increment indefinitely over the course of a game. Each levels brings fast
 
 ![levels]
 
+## User Feedback
+
+A deliberate effort has been made to provide subtle feedback cues to the user.
+
+### Particles
+
+In addition to messages, 50 particles are generated upon a successful key press. These particles are a assigned a random vector, and a size and color sampled from constants:
+
+```javascript
+class Particle {
+  constructor (game) {
+    this.game = game;
+    this.opacity = 1;
+    this.pos = [170, 240];
+    this.size = Particle.SIZES[
+      Math.floor(Math.random() * Particle.SIZES.length)
+    ];
+    this.rgb = Particle.RGBS[
+      Math.floor(Math.random() * Particle.RGBS.length)
+    ];
+    this.vector = [
+      Math.random() * 2 - 1,
+      Math.random() * 2 - 1
+    ];
+  }
+}
+```
+
+After generation, the particles scatter and fade out with each draw call. They do this by incrementing their position according to their vector, and decrementing their opacity to give the appearance of a fade-out:
+
+```javascript
+class Particle {
+  draw (ctx) {
+    this.opacity -= 0.05;
+    ctx.beginPath();
+    ctx.rect(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+    ctx.fillStyle = `rgba(${this.rgb},${this.opacity})`;
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  move () {
+    this.pos[0] += 6 * this.vector[0];
+    this.pos[1] += 6 * this.vector[1];
+  }
+}
+```
+
 [overview]: ./docs/images/Overview.png
 [damage]: ./docs/images/Damage.gif
 [points]: ./docs/images/Points.gif
