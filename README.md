@@ -67,7 +67,7 @@ Levels increment indefinitely over the course of a game. Each levels brings fast
 
 ## User Feedback
 
-A deliberate effort has been made to provide subtle feedback cues to the user.
+All games face the task of developing a language of interaction with the user, to cue the player on whether they're playing well or poorly. To accomplish this, Street Dodger implements a few features worth highlighting:
 
 ### Particles
 
