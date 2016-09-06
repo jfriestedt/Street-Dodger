@@ -514,7 +514,6 @@
 	    let dodgeZoneMax = this.pos[0] + 50;
 	    let dodgeKeyMin = this.collidedDodgeKey.pos[0];
 	    let dodgeKeyMax = this.collidedDodgeKey.pos[0] + 50;
-	
 	    let overlap;
 	
 	    if (dodgeKeyMin >= dodgeZoneMin) {
@@ -1021,10 +1020,6 @@
 	  move () {
 	    this.pos[0] += 6 * this.direction[0];
 	    this.pos[1] += 6 * this.direction[1];
-	  }
-	
-	  reassignColor () {
-	    this.color = this.color;
 	  }
 	
 	  draw (ctx) {
