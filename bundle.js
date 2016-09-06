@@ -66,12 +66,12 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const DamageOverlay = __webpack_require__(9);
-	const DodgeKey = __webpack_require__(2);
-	const DodgeZone = __webpack_require__(4);
-	const GameOver = __webpack_require__(6);
-	const Ground = __webpack_require__(7);
-	const HealthBar = __webpack_require__(8);
+	const DamageOverlay = __webpack_require__(2);
+	const DodgeKey = __webpack_require__(3);
+	const DodgeZone = __webpack_require__(5);
+	const GameOver = __webpack_require__(7);
+	const Ground = __webpack_require__(8);
+	const HealthBar = __webpack_require__(9);
 	const LevelBanner = __webpack_require__(10);
 	const Message = __webpack_require__(11);
 	const MissZone = __webpack_require__(12);
@@ -161,7 +161,7 @@
 	
 	  addDamageOverlay () {
 	    this.add(new DamageOverlay(this));
-	    window.setTimeout(this.removeDamageOverlay.bind(this), 70);
+	    setTimeout(this.removeDamageOverlay.bind(this), 70);
 	  }
 	
 	  addLevelBanner () {
@@ -169,9 +169,9 @@
 	  }
 	
 	  addMessage (message) {
-	    window.clearTimeout(this.messageTimeout);
+	    clearTimeout(this.messageTimeout);
 	    this.add(new Message(message, this));
-	    this.messageTimeout = window.setTimeout(this.removeMessage.bind(this), 500);
+	    this.messageTimeout = setTimeout(this.removeMessage.bind(this), 500);
 	  }
 	
 	  addMissZone () {
@@ -179,7 +179,7 @@
 	  }
 	
 	  addParticles () {
-	    window.clearTimeout(this.particlesTimeout);
+	    clearTimeout(this.particlesTimeout);
 	    let particles = 0;
 	
 	    while (particles < 50) {
@@ -306,11 +306,11 @@
 	      ) / this.pedestrianSpeed;
 	    }
 	
-	    window.setTimeout(this.addPedestrian.bind(this), delay);
-	    window.clearTimeout();
+	    setTimeout(this.addPedestrian.bind(this), delay);
+	    clearTimeout();
 	    this.levelPedestrianCount++;
 	    if (!this.over) {
-	      window.setTimeout(this.spawnPedestrians.bind(this), delay);
+	      setTimeout(this.spawnPedestrians.bind(this), delay);
 	    }
 	  }
 	
@@ -343,9 +343,37 @@
 
 /***/ },
 /* 2 */
+/***/ function(module, exports) {
+
+	class DamageOverlay {
+	  constructor (game) {
+	    this.game = game;
+	    this.pos = [0, 0];
+	    this.width = 800;
+	    this.height = 500;
+	    this.image = new Image();
+	    this.image.src = "lib/images/hit_overlay.png";
+	  }
+	
+	  move () {}
+	
+	  draw (ctx) {
+	    ctx.beginPath();
+	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
+	    ctx.fillStyle = "rgba(255,0,0,0.5)";
+	    ctx.fill();
+	    ctx.closePath();
+	  }
+	}
+	
+	module.exports = DamageOverlay;
+
+
+/***/ },
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const ScrollingObject = __webpack_require__(3);
+	const ScrollingObject = __webpack_require__(4);
 	
 	class DodgeKey {
 	  constructor(options = {}) {
@@ -394,7 +422,7 @@
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	class ScrollingObject {
@@ -437,10 +465,10 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(5);
+	const GameView = __webpack_require__(6);
 	
 	class DodgeZone {
 	  constructor (game) {
@@ -553,7 +581,7 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	class GameView {
@@ -658,10 +686,10 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(5);
+	const GameView = __webpack_require__(6);
 	const Game = __webpack_require__(1);
 	
 	class GameOver {
@@ -734,7 +762,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	class Ground {
@@ -780,7 +808,7 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports) {
 
 	class HealthBar {
@@ -824,34 +852,6 @@
 	}
 	
 	module.exports = HealthBar;
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	class DamageOverlay {
-	  constructor (game) {
-	    this.game = game;
-	    this.pos = [0, 0];
-	    this.width = 800;
-	    this.height = 500;
-	    this.image = new Image();
-	    this.image.src = "lib/images/hit_overlay.png";
-	  }
-	
-	  move () {}
-	
-	  draw (ctx) {
-	    ctx.beginPath();
-	    ctx.rect(this.pos[0], this.pos[1], this.width, this.height);
-	    ctx.fillStyle = "rgba(255,0,0,0.5)";
-	    ctx.fill();
-	    ctx.closePath();
-	  }
-	}
-	
-	module.exports = DamageOverlay;
 
 
 /***/ },
@@ -940,7 +940,7 @@
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(5);
+	const GameView = __webpack_require__(6);
 	
 	class MissZone {
 	  constructor (game) {
@@ -1040,7 +1040,7 @@
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const ScrollingObject = __webpack_require__(3);
+	const ScrollingObject = __webpack_require__(4);
 	
 	class Pedestrian extends ScrollingObject {
 	  constructor(options = {}) {
@@ -1307,7 +1307,7 @@
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	const GameView = __webpack_require__(5);
+	const GameView = __webpack_require__(6);
 	
 	class LandingPage {
 	  constructor (game, ctx) {

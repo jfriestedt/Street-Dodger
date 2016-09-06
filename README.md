@@ -113,6 +113,24 @@ class Particle {
 }
 ```
 
+### Damage Overlay
+
+Invalid key presses or missed key presses trigger the creation of a red damage overlay which occupies the whole screen and disappears very quickly after it is created:
+
+```javascript
+class Game {
+  sendDamage (damage) {
+    this.healthBar[0].registerDamage(damage);
+    this.addDamageOverlay();
+  }
+
+  addDamageOverlay () {
+    this.add(new DamageOverlay(this));
+    setTimeout(this.removeDamageOverlay.bind(this), 70);
+  }
+}
+```
+
 [overview]: ./docs/images/Overview.png
 [damage]: ./docs/images/Damage.gif
 [points]: ./docs/images/Points.gif
